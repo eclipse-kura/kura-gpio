@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2025 Eurotech and/or its affiliates and others
+ * Copyright (c) 2025, 2026 Eurotech and/or its affiliates and others
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -390,14 +390,6 @@ public class LibGpiodV2Pin extends LibGpiodPin implements KuraGPIOPin {
             return LibGpiodV2Native.GPIOD_LINE_EDGE_BOTH;
         default:
             return -1;
-        }
-    }
-
-    public static int extractChipNumber(String chipName) {
-        try {
-            return Integer.parseInt(chipName.replaceAll("\\D", ""));
-        } catch (NumberFormatException e) {
-            return 0;
         }
     }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2025 Eurotech and/or its affiliates and others
+ * Copyright (c) 2025, 2026 Eurotech and/or its affiliates and others
  * 
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -275,6 +275,83 @@ public class LibGpiodV2GPIOServiceTest extends CommonSteps {
     }
 
     @Test
+    public void testGetPinByGpiochipAndLineWithNegativeGpiochip() {
+        givenV2GPIOService();
+
+        whenV2ServiceGetPinByGpiochipAndLine(-1,1);
+
+        thenExceptionOccurred(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void testGetPinByGpiochipAndLineWithNegativeLine() {
+        givenV2GPIOService();
+
+        whenV2ServiceGetPinByGpiochipAndLine(1,-1);
+
+        thenExceptionOccurred(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void testGetPinByGpiochipAndLineWithValidValues() {
+        givenV2GPIOService();
+
+        whenV2ServiceGetPinByGpiochipAndLine(2,3);
+
+        thenNoExceptionOccurred();
+        thenPinIsNotNull();
+        thenPinIs(2003, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.NONE);
+    }
+
+    @Test
+    public void testGetPinByGpiochipAndLineWithParameters() {
+        givenV2GPIOService();
+
+        whenV2ServiceGetPinByGpiochipAndLine(2,3, KuraGPIODirection.OUTPUT, KuraGPIOMode.OUTPUT_PUSH_PULL,
+                KuraGPIOTrigger.NONE);
+
+        thenNoExceptionOccurred();
+        thenPinIsNotNull();
+        thenPinIs(2003, KuraGPIODirection.OUTPUT, KuraGPIOMode.OUTPUT_PUSH_PULL, KuraGPIOTrigger.NONE);
+    }
+
+    @Test
+    public void testGetPinByGpiochipAndLineNotInAvailablePins() {
+        givenV2GPIOService();
+
+        whenV2ServiceGetPinByGpiochipAndLine(9,999);
+
+        thenExceptionOccurred(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void testGetPinByGpiochipAndLineNotValid() {
+        givenV2GPIOService();
+
+        whenV2ServiceGetPinByGpiochipAndLine(2,33);
+        thenExceptionOccurred(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void testGetPinByGpiochipAndLineWithoutChip() {
+        givenV2GPIOService();
+
+        whenV2ServiceGetPinByGpiochipAndLine(5,23);
+
+        thenExceptionOccurred(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void testGetPinByGpiochipAndLineFromCache() {
+        givenV2GPIOService();
+
+        whenV2ServiceGetPinByGpiochipAndLine(2,3);
+        whenV2ServiceGetPinByGpiochipAndLineAgain(2,3);
+        thenNoExceptionOccurred();
+        thenPinsAreSame();
+    }
+
+    @Test
     public void testGetAvailablePins() {
         givenV2GPIOService();
 
@@ -477,6 +554,31 @@ public class LibGpiodV2GPIOServiceTest extends CommonSteps {
             KuraGPIOTrigger trigger) {
         try {
             this.resultPin = this.v2Service.getPinByTerminal(pinTerminal, direction, mode, trigger);
+        } catch (Exception e) {
+            this.occurredException = e;
+        }
+    }
+
+    private void whenV2ServiceGetPinByGpiochipAndLine(int gpiochip, int line) {
+        try {
+            this.resultPin = this.v2Service.getPinByGpiochipAndLine(gpiochip, line);
+        } catch (Exception e) {
+            this.occurredException = e;
+        }
+    }
+
+    private void whenV2ServiceGetPinByGpiochipAndLineAgain(int gpiochip, int line) {
+        try {
+            this.resultPinAgain = this.v2Service.getPinByGpiochipAndLine(gpiochip, line);
+        } catch (Exception e) {
+            this.occurredException = e;
+        }
+    }
+
+    private void whenV2ServiceGetPinByGpiochipAndLine(int gpiochip, int line, KuraGPIODirection direction, KuraGPIOMode mode,
+            KuraGPIOTrigger trigger) {
+        try {
+            this.resultPin = this.v2Service.getPinByGpiochipAndLine(gpiochip, line, direction, mode, trigger);
         } catch (Exception e) {
             this.occurredException = e;
         }

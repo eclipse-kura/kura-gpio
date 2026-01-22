@@ -89,4 +89,21 @@ public class GPIOServiceImpl implements GPIOService {
         return this.gpioService.get().getAvailablePins();
     }
 
+    @Override
+    public KuraGPIOPin getPinByGpiochipAndLine(int gpiochip, int line) {
+        if (!this.gpioService.isPresent()) {
+            throw new IllegalStateException("No libgpiod GPIOService implementation available");
+        }
+        return this.gpioService.get().getPinByGpiochipAndLine(gpiochip, line);
+    }
+
+    @Override
+    public KuraGPIOPin getPinByGpiochipAndLine(int gpiochip, int line, KuraGPIODirection direction, KuraGPIOMode mode,
+            KuraGPIOTrigger trigger) {
+        if (!this.gpioService.isPresent()) {
+            throw new IllegalStateException("No libgpiod GPIOService implementation available");
+        }
+        return this.gpioService.get().getPinByGpiochipAndLine(gpiochip, line, direction, mode, trigger);
+    }
+
 }

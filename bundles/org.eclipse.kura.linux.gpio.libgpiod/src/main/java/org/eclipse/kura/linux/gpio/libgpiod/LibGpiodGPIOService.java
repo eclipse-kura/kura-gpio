@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2025 Eurotech and/or its affiliates and others
+ * Copyright (c) 2025, 2026 Eurotech and/or its affiliates and others
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -158,6 +158,42 @@ public abstract class LibGpiodGPIOService {
         }
 
         KuraGPIOPin pin = createPin(chipPath, offset, direction, mode, trigger, pinName.get());
+        this.pinCache.put(pinName.get(), pin);
+
+        return pin;
+    }
+
+    public KuraGPIOPin getPinByGpiochipAndLine(int gpiochip, int line) {
+        return getPinByGpiochipAndLine(gpiochip, line, DEFAULT_DIRECTION, DEFAULT_MODE, DEFAULT_TRIGGER);
+    }
+
+    public KuraGPIOPin getPinByGpiochipAndLine(int gpiochip, int line, KuraGPIODirection direction, KuraGPIOMode mode,
+            KuraGPIOTrigger trigger) {
+        if (gpiochip < 0 || line < 0) {
+            throw new IllegalArgumentException("Gpiochip and line numbers must be non-negative");
+        }
+
+        initialize();
+
+        int globalPinNumber = gpiochip * 1000 + line;
+        Optional<String> pinName = this.availablePins.entrySet().stream().filter(entry -> entry.getValue() == globalPinNumber)
+                .map(Map.Entry::getKey).findFirst();
+        if (!pinName.isPresent()) {
+            throw new IllegalArgumentException("Pin not found: " + globalPinNumber);
+        }
+
+        KuraGPIOPin cachedPin = this.pinCache.get(pinName.get());
+        if (cachedPin != null && pinHasSameConfiguration(cachedPin, direction, mode, trigger)) {
+            return cachedPin;
+        }
+
+        String chipPath = getDeviceFolderPath() + GPIO_CHIP_NAME + gpiochip;
+
+        if (!isValidPin(chipPath, line)) {
+            throw new IllegalArgumentException("Invalid pin: " + chipPath + " line " + line);
+        }
+
+        KuraGPIOPin pin = createPin(chipPath, line, direction, mode, trigger, pinName.get());
         this.pinCache.put(pinName.get(), pin);
 
         return pin;

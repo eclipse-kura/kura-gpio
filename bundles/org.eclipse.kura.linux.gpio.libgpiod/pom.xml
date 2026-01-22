@@ -28,7 +28,6 @@
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../../tests/*/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
-        <jna.version>5.17.0</jna.version>
     </properties>
 
     <artifactId>org.eclipse.kura.linux.gpio.libgpiod</artifactId>

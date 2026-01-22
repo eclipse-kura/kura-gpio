@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2025 Eurotech and/or its affiliates and others
+ * Copyright (c) 2025, 2026 Eurotech and/or its affiliates and others
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -20,20 +20,29 @@ import org.eclipse.kura.gpio.KuraGPIODirection;
 import org.eclipse.kura.gpio.KuraGPIOMode;
 import org.eclipse.kura.gpio.KuraGPIOPin;
 import org.eclipse.kura.gpio.KuraGPIOTrigger;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component(immediate = true, //
+    name = "org.eclipse.kura.gpio.GPIOService", //
+    property = { "kura.service.pid=org.eclipse.kura.gpio.GPIOService", "service.pid=org.eclipse.kura.gpio.GPIOService" } //
+)
 public class GPIOServiceImpl implements GPIOService {
 
     private static final Logger logger = LoggerFactory.getLogger(GPIOServiceImpl.class);
 
     private Optional<GPIOService> gpioService = Optional.empty();
 
+    @Activate
     protected void activate() {
         logger.info("Activating libgpiod GPIOService...");
         this.gpioService = LibGpiodGPIOServiceFactory.getInstance();
     }
 
+    @Deactivate
     protected void deactivate() {
         logger.info("Deactivating libgpiod GPIOService...");
     }

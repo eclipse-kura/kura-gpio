@@ -455,7 +455,6 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
 
         @Override
         public void close() {
-            logger.debug("I'M HERE!!!!!");
             // Method not supported
         }
     }

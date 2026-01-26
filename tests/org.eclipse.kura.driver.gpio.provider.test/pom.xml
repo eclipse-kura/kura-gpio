@@ -23,7 +23,7 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.eclipse.kura.linux.gpio.libgpiod.test</artifactId>
+    <artifactId>org.eclipse.kura.driver.gpio.provider.test</artifactId>
     <packaging>eclipse-test-plugin</packaging>
     
         <dependencies>

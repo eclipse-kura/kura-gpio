@@ -12,3 +12,4 @@ RemoteSystemsTempFiles
 .vscode
 OSGI-INF
 bundles/org.eclipse.kura.linux.gpio.libgpiod/lib/
+javaConfig.json

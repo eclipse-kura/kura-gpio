@@ -408,6 +408,7 @@
 
     <modules>
         <module>org.eclipse.kura.linux.gpio.libgpiod.test</module>
+        <module>org.eclipse.kura.driver.gpio.provider.test</module>
     </modules>
 
 </project>

@@ -303,24 +303,24 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
     private Optional<TypedValue<?>> getTypedValue(final DataType expectedValueType, final boolean containedValue) {
         try {
             switch (expectedValueType) {
-            case LONG:
-                return Optional.of(TypedValues.newLongValue(containedValue ? (long) 1 : (long) 0));
-            case FLOAT:
-                return Optional.of(TypedValues.newFloatValue(containedValue ? (float) 1 : (float) 0));
-            case DOUBLE:
-                return Optional.of(TypedValues.newDoubleValue(containedValue ? (double) 1 : (double) 0));
-            case INTEGER:
-                return Optional.of(TypedValues.newIntegerValue(containedValue ? (int) 1 : (int) 0));
-            case BOOLEAN:
-                return Optional.of(TypedValues.newBooleanValue(containedValue));
-            case STRING:
-                return Optional.of(TypedValues.newStringValue(containedValue ? "true" : "false"));
-            case BYTE_ARRAY:
-                byte[] falseArray = { 0x00 };
-                byte[] trueArray = { 0x01 };
-                return Optional.of(TypedValues.newByteArrayValue(containedValue ? trueArray : falseArray));
-            default:
-                return Optional.empty();
+                case LONG:
+                    return Optional.of(TypedValues.newLongValue(containedValue ? (long) 1 : (long) 0));
+                case FLOAT:
+                    return Optional.of(TypedValues.newFloatValue(containedValue ? (float) 1 : (float) 0));
+                case DOUBLE:
+                    return Optional.of(TypedValues.newDoubleValue(containedValue ? (double) 1 : (double) 0));
+                case INTEGER:
+                    return Optional.of(TypedValues.newIntegerValue(containedValue ? (int) 1 : (int) 0));
+                case BOOLEAN:
+                    return Optional.of(TypedValues.newBooleanValue(containedValue));
+                case STRING:
+                    return Optional.of(TypedValues.newStringValue(containedValue ? "true" : "false"));
+                case BYTE_ARRAY:
+                    byte[] falseArray = { 0x00 };
+                    byte[] trueArray = { 0x01 };
+                    return Optional.of(TypedValues.newByteArrayValue(containedValue ? trueArray : falseArray));
+                default:
+                    return Optional.empty();
             }
         } catch (final Exception ex) {
             logger.error(VALUE_CONVERSION_ERROR_MESSAGE, ex);
@@ -331,31 +331,31 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
     private TypedValue<Boolean> getBooleanValue(TypedValue<?> value) {
         try {
             switch (value.getType()) {
-            case LONG:
-                return TypedValues.newBooleanValue(((long) value.getValue()) > 0);
-            case FLOAT:
-                return TypedValues.newBooleanValue(((float) value.getValue()) > 0);
-            case DOUBLE:
-                return TypedValues.newBooleanValue(((double) value.getValue()) > 0);
-            case INTEGER:
-                return TypedValues.newBooleanValue(((int) value.getValue()) > 0);
-            case BOOLEAN:
-                return TypedValues.newBooleanValue((Boolean) value.getValue());
-            case STRING:
-                String valueString = (String) value.getValue();
-                if (valueString != null && !valueString.isEmpty()) {
-                    return TypedValues
-                            .newBooleanValue(((String) value.getValue()).equalsIgnoreCase("true"));
-                } else {
+                case LONG:
+                    return TypedValues.newBooleanValue(((long) value.getValue()) > 0);
+                case FLOAT:
+                    return TypedValues.newBooleanValue(((float) value.getValue()) > 0);
+                case DOUBLE:
+                    return TypedValues.newBooleanValue(((double) value.getValue()) > 0);
+                case INTEGER:
+                    return TypedValues.newBooleanValue(((int) value.getValue()) > 0);
+                case BOOLEAN:
+                    return TypedValues.newBooleanValue((Boolean) value.getValue());
+                case STRING:
+                    String valueString = (String) value.getValue();
+                    if (valueString != null && !valueString.isEmpty()) {
+                        return TypedValues
+                                .newBooleanValue(((String) value.getValue()).equalsIgnoreCase("true"));
+                    } else {
+                        return TypedValues.newBooleanValue(false);
+                    }
+                case BYTE_ARRAY:
+                    byte[] valueBytes = (byte[]) value.getValue();
+                    byte[] zeros = new byte[valueBytes.length];
+                    Arrays.fill(zeros, (byte) 0x0);
+                    return TypedValues.newBooleanValue(!Arrays.equals(valueBytes, zeros));
+                default:
                     return TypedValues.newBooleanValue(false);
-                }
-            case BYTE_ARRAY:
-                byte[] valueBytes = (byte[]) value.getValue();
-                byte[] zeros = new byte[valueBytes.length];
-                Arrays.fill(zeros, (byte) 0x0);
-                return TypedValues.newBooleanValue(!Arrays.equals(valueBytes, zeros));
-            default:
-                return TypedValues.newBooleanValue(false);
             }
         } catch (final Exception ex) {
             logger.error(VALUE_CONVERSION_ERROR_MESSAGE, ex);

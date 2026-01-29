@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, 2020 Eurotech and/or its affiliates and others
+ * Copyright (c) 2018, 2026 Eurotech and/or its affiliates and others
  * 
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,7 @@ package org.eclipse.kura.internal.driver.gpio;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.kura.configuration.metatype.Option;
 import org.eclipse.kura.core.configuration.metatype.Tad;
@@ -22,6 +23,7 @@ import org.eclipse.kura.core.configuration.metatype.Toption;
 import org.eclipse.kura.core.configuration.metatype.Tscalar;
 import org.eclipse.kura.driver.ChannelDescriptor;
 import org.eclipse.kura.gpio.GPIOService;
+import org.eclipse.kura.gpio.KuraGPIODescription;
 import org.eclipse.kura.gpio.KuraGPIODirection;
 import org.eclipse.kura.gpio.KuraGPIOTrigger;
 
@@ -88,7 +90,15 @@ public final class GPIOChannelDescriptor implements ChannelDescriptor {
 
         List<String> availablePins = new ArrayList<>();
         for (GPIOService service : this.gpioServices) {
-            availablePins.addAll(service.getAvailablePins().values());
+            List<KuraGPIODescription> pinDescriptions = service.getAvailablePinDescriptions();
+            pinDescriptions.forEach(description -> {
+                Optional<String> pinName = description.getName();
+                if (pinName.isPresent()) {
+                    availablePins.add(formatName(pinName.get(), description.getController(), description.getLine()));
+                } else {
+                    availablePins.add(formatName("UNKNOWN", description.getController(), description.getLine()));
+                }
+            });
         }
 
         final Tad resourceName = new Tad();
@@ -141,4 +151,7 @@ public final class GPIOChannelDescriptor implements ChannelDescriptor {
         return KuraGPIOTrigger.valueOf((String) properties.get(RESOURCE_TRIGGER));
     }
 
+    private String formatName(String name, int controller, int line) {
+        return String.format("%s:%d:%d", name, controller, line);
+    }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2025 Eurotech and/or its affiliates and others
+ * Copyright (c) 2025, 2026 Eurotech and/or its affiliates and others
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -14,13 +14,16 @@
 package org.eclipse.kura.linux.gpio.libgpiod2;
 
 import java.io.File;
+import java.util.Optional;
 
 import org.eclipse.kura.gpio.GPIOService;
+import org.eclipse.kura.gpio.KuraGPIODescription;
 import org.eclipse.kura.gpio.KuraGPIODirection;
 import org.eclipse.kura.gpio.KuraGPIOMode;
 import org.eclipse.kura.gpio.KuraGPIOPin;
 import org.eclipse.kura.gpio.KuraGPIOTrigger;
 import org.eclipse.kura.linux.gpio.libgpiod.LibGpiodGPIOService;
+import org.eclipse.kura.linux.gpio.libgpiod.LibGpiodPin;
 
 import com.sun.jna.Pointer;
 
@@ -68,17 +71,14 @@ public class LibGpiodV2GPIOService extends LibGpiodGPIOService implements GPIOSe
         try {
             lineInfo = LibGpiodV2NativeWrapper.getInstance().gpiod_chip_get_line_info(chip, offset);
             if (lineInfo != null) {
+                int chipNumber = LibGpiodPin.extractChipNumber(new File(chipPath).getName());
                 String pinName = LibGpiodV2NativeWrapper.getInstance().gpiod_line_info_get_name(lineInfo);
                 if (pinName == null || pinName.trim().isEmpty() || pinName.equals("-")) {
-                    return;
+                    this.availablePinDescriptions.add(new KuraGPIODescription(chipNumber, offset));
+                } else {
+                    this.availablePinDescriptions.add(new KuraGPIODescription(chipNumber, offset, pinName));
                 }
-                // Calculate global pin number (chip_number * 1000 + offset)
-                int chipNumber = LibGpiodV2Pin.extractChipNumber(new File(chipPath).getName());
-                int globalPinNumber = chipNumber * 1000 + offset;
-
-                this.availablePins.put(pinName, globalPinNumber);
             }
-
         } finally {
             if (lineInfo != null) {
                 LibGpiodV2NativeWrapper.getInstance().gpiod_line_info_free(lineInfo);
@@ -117,6 +117,20 @@ public class LibGpiodV2GPIOService extends LibGpiodGPIOService implements GPIOSe
     protected KuraGPIOPin createPin(String chipPath, int offset, KuraGPIODirection direction, KuraGPIOMode mode,
             KuraGPIOTrigger trigger, String pinName) {
         return new LibGpiodV2Pin(chipPath, offset, direction, mode, trigger, pinName);
+    }
+
+    @Override
+    protected KuraGPIOPin createPin(KuraGPIODescription description, KuraGPIODirection direction, KuraGPIOMode mode,
+            KuraGPIOTrigger trigger) {
+        Optional<String> pinName = description.getName();
+        if (pinName.isPresent()) {
+            return new LibGpiodV2Pin(getDeviceFolderPath() + GPIO_CHIP_NAME + description.getController(),
+                    description.getLine(), direction, mode, trigger,
+                    pinName.get());
+        } else {
+            return new LibGpiodV2Pin(getDeviceFolderPath() + GPIO_CHIP_NAME + description.getController(),
+                    description.getLine(), direction, mode, trigger);
+        }
     }
 
 }

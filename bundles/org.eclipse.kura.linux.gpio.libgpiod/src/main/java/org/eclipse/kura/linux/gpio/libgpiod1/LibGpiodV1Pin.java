@@ -48,6 +48,11 @@ public class LibGpiodV1Pin extends LibGpiodPin implements KuraGPIOPin {
         super(chipPath, offset, direction, mode, trigger, pinName);
     }
 
+    public LibGpiodV1Pin(String chipPath, int offset, KuraGPIODirection direction, KuraGPIOMode mode,
+            KuraGPIOTrigger trigger) {
+        super(chipPath, offset, direction, mode, trigger);
+    }
+
     @Override
     public void open() throws KuraGPIODeviceException, KuraUnavailableDeviceException {
         synchronized (this) {
@@ -136,22 +141,25 @@ public class LibGpiodV1Pin extends LibGpiodPin implements KuraGPIOPin {
         try {
             int triggerResult = 0;
             switch (this.trigger) {
-            case RAISING_EDGE:
-                triggerResult = LibGpiodV1NativeWrapper.getInstance().gpiod_line_request_rising_edge_events(this.line,
-                        LIB_GPIOD_V1_PIN_EVENT_MONITOR);
-                break;
-            case FALLING_EDGE:
-                triggerResult = LibGpiodV1NativeWrapper.getInstance().gpiod_line_request_falling_edge_events(this.line,
-                        LIB_GPIOD_V1_PIN_EVENT_MONITOR);
-                break;
-            case BOTH_EDGES:
-                triggerResult = LibGpiodV1NativeWrapper.getInstance().gpiod_line_request_both_edges_events(this.line,
-                        LIB_GPIOD_V1_PIN_EVENT_MONITOR);
-                break;
-            default:
-                logger.error("Unsupported trigger mode for event monitoring: {}", this.trigger);
-                this.isMonitoring.set(false);
-                return;
+                case RAISING_EDGE:
+                    triggerResult = LibGpiodV1NativeWrapper.getInstance().gpiod_line_request_rising_edge_events(
+                            this.line,
+                            LIB_GPIOD_V1_PIN_EVENT_MONITOR);
+                    break;
+                case FALLING_EDGE:
+                    triggerResult = LibGpiodV1NativeWrapper.getInstance().gpiod_line_request_falling_edge_events(
+                            this.line,
+                            LIB_GPIOD_V1_PIN_EVENT_MONITOR);
+                    break;
+                case BOTH_EDGES:
+                    triggerResult = LibGpiodV1NativeWrapper.getInstance().gpiod_line_request_both_edges_events(
+                            this.line,
+                            LIB_GPIOD_V1_PIN_EVENT_MONITOR);
+                    break;
+                default:
+                    logger.error("Unsupported trigger mode for event monitoring: {}", this.trigger);
+                    this.isMonitoring.set(false);
+                    return;
             }
             if (triggerResult < 0) {
                 logger.error("Failed to request line for events");
@@ -263,17 +271,17 @@ public class LibGpiodV1Pin extends LibGpiodPin implements KuraGPIOPin {
                 int result;
 
                 switch (this.direction) {
-                case INPUT:
-                    result = LibGpiodV1NativeWrapper.getInstance().gpiod_line_request_input_flags(this.line,
-                            "LibGpiodV1PinDriver", flags);
-                    break;
-                case OUTPUT:
-                    int defaultValue = LibGpiodV1Native.GPIOD_LINE_ACTIVE_STATE_LOW;
-                    result = LibGpiodV1NativeWrapper.getInstance().gpiod_line_request_output_flags(this.line,
-                            "LibGpiodV1PinDriver", flags, defaultValue);
-                    break;
-                default:
-                    throw new KuraGPIODeviceException("Unsupported direction: " + this.direction);
+                    case INPUT:
+                        result = LibGpiodV1NativeWrapper.getInstance().gpiod_line_request_input_flags(this.line,
+                                "LibGpiodV1PinDriver", flags);
+                        break;
+                    case OUTPUT:
+                        int defaultValue = LibGpiodV1Native.GPIOD_LINE_ACTIVE_STATE_LOW;
+                        result = LibGpiodV1NativeWrapper.getInstance().gpiod_line_request_output_flags(this.line,
+                                "LibGpiodV1PinDriver", flags, defaultValue);
+                        break;
+                    default:
+                        throw new KuraGPIODeviceException("Unsupported direction: " + this.direction);
                 }
 
                 if (result < 0) {
@@ -291,18 +299,18 @@ public class LibGpiodV1Pin extends LibGpiodPin implements KuraGPIOPin {
     private int calculateFlags() {
         int flags = 0;
         switch (this.mode) {
-        case INPUT_PULL_UP:
-            flags |= LibGpiodV1Native.GPIOD_LINE_REQUEST_FLAG_BIAS_PULL_UP;
-            break;
-        case INPUT_PULL_DOWN:
-            flags |= LibGpiodV1Native.GPIOD_LINE_REQUEST_FLAG_BIAS_PULL_DOWN;
-            break;
-        case OUTPUT_OPEN_DRAIN:
-            flags |= LibGpiodV1Native.GPIOD_LINE_REQUEST_FLAG_OPEN_DRAIN;
-            break;
-        default:
-            // No additional flags for OUTPUT_PUSH_PULL
-            break;
+            case INPUT_PULL_UP:
+                flags |= LibGpiodV1Native.GPIOD_LINE_REQUEST_FLAG_BIAS_PULL_UP;
+                break;
+            case INPUT_PULL_DOWN:
+                flags |= LibGpiodV1Native.GPIOD_LINE_REQUEST_FLAG_BIAS_PULL_DOWN;
+                break;
+            case OUTPUT_OPEN_DRAIN:
+                flags |= LibGpiodV1Native.GPIOD_LINE_REQUEST_FLAG_OPEN_DRAIN;
+                break;
+            default:
+                // No additional flags for OUTPUT_PUSH_PULL
+                break;
         }
 
         return flags;

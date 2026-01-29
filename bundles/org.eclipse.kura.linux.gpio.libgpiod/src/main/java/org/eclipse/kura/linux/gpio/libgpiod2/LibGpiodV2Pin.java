@@ -47,6 +47,11 @@ public class LibGpiodV2Pin extends LibGpiodPin implements KuraGPIOPin {
         super(chipPath, offset, direction, mode, trigger, pinName);
     }
 
+    public LibGpiodV2Pin(String chipPath, int offset, KuraGPIODirection direction, KuraGPIOMode mode,
+            KuraGPIOTrigger trigger) {
+        super(chipPath, offset, direction, mode, trigger);
+    }
+
     @Override
     public void open() throws KuraGPIODeviceException, KuraUnavailableDeviceException, IOException {
         synchronized (this) {
@@ -349,47 +354,47 @@ public class LibGpiodV2Pin extends LibGpiodPin implements KuraGPIOPin {
     // Helper methods to convert Kura enums to libgpiod constants
     private int convertDirection(KuraGPIODirection direction) {
         switch (direction) {
-        case INPUT:
-            return LibGpiodV2Native.GPIOD_LINE_DIRECTION_INPUT;
-        case OUTPUT:
-            return LibGpiodV2Native.GPIOD_LINE_DIRECTION_OUTPUT;
-        default:
-            return LibGpiodV2Native.GPIOD_LINE_DIRECTION_AS_IS;
+            case INPUT:
+                return LibGpiodV2Native.GPIOD_LINE_DIRECTION_INPUT;
+            case OUTPUT:
+                return LibGpiodV2Native.GPIOD_LINE_DIRECTION_OUTPUT;
+            default:
+                return LibGpiodV2Native.GPIOD_LINE_DIRECTION_AS_IS;
         }
     }
 
     private int convertModeToBias(KuraGPIOMode mode) {
         switch (mode) {
-        case INPUT_PULL_UP:
-            return LibGpiodV2Native.GPIOD_LINE_BIAS_PULL_UP;
-        case INPUT_PULL_DOWN:
-            return LibGpiodV2Native.GPIOD_LINE_BIAS_PULL_DOWN;
-        default:
-            return -1;
+            case INPUT_PULL_UP:
+                return LibGpiodV2Native.GPIOD_LINE_BIAS_PULL_UP;
+            case INPUT_PULL_DOWN:
+                return LibGpiodV2Native.GPIOD_LINE_BIAS_PULL_DOWN;
+            default:
+                return -1;
         }
     }
 
     private int convertModeToDrive(KuraGPIOMode mode) {
         switch (mode) {
-        case OUTPUT_OPEN_DRAIN:
-            return LibGpiodV2Native.GPIOD_LINE_DRIVE_OPEN_DRAIN;
-        case OUTPUT_PUSH_PULL:
-            return LibGpiodV2Native.GPIOD_LINE_DRIVE_PUSH_PULL;
-        default:
-            return LibGpiodV2Native.GPIOD_LINE_DRIVE_PUSH_PULL;
+            case OUTPUT_OPEN_DRAIN:
+                return LibGpiodV2Native.GPIOD_LINE_DRIVE_OPEN_DRAIN;
+            case OUTPUT_PUSH_PULL:
+                return LibGpiodV2Native.GPIOD_LINE_DRIVE_PUSH_PULL;
+            default:
+                return LibGpiodV2Native.GPIOD_LINE_DRIVE_PUSH_PULL;
         }
     }
 
     private int convertTriggerToEdge(KuraGPIOTrigger trigger) {
         switch (trigger) {
-        case RAISING_EDGE:
-            return LibGpiodV2Native.GPIOD_LINE_EDGE_RISING;
-        case FALLING_EDGE:
-            return LibGpiodV2Native.GPIOD_LINE_EDGE_FALLING;
-        case BOTH_EDGES:
-            return LibGpiodV2Native.GPIOD_LINE_EDGE_BOTH;
-        default:
-            return -1;
+            case RAISING_EDGE:
+                return LibGpiodV2Native.GPIOD_LINE_EDGE_RISING;
+            case FALLING_EDGE:
+                return LibGpiodV2Native.GPIOD_LINE_EDGE_FALLING;
+            case BOTH_EDGES:
+                return LibGpiodV2Native.GPIOD_LINE_EDGE_BOTH;
+            default:
+                return -1;
         }
     }
 

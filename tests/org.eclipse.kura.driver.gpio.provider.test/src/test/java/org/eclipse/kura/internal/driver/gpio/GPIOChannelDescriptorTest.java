@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import org.eclipse.kura.configuration.metatype.Option;
 import org.eclipse.kura.core.configuration.metatype.Tad;
 import org.eclipse.kura.gpio.GPIOService;
+import org.eclipse.kura.gpio.KuraGPIODescription;
 import org.eclipse.kura.gpio.KuraGPIODirection;
 import org.eclipse.kura.gpio.KuraGPIOTrigger;
 import org.junit.Before;
@@ -48,7 +49,7 @@ public class GPIOChannelDescriptorTest {
 
     @Before
     public void setUp() {
-        givenAvailablePins("PIN1", "PIN2");
+        getAvailablePinDescriptions("PIN1", "PIN2");
         givenDescriptor();
     }
 
@@ -56,7 +57,7 @@ public class GPIOChannelDescriptorTest {
     public void shouldBuildDescriptorWithPinsDefaultsAndEnums() {
         whenDescriptorIsBuilt();
 
-        thenResourceNameOptionsContain(elements, "PIN1", "PIN2", GPIOChannelDescriptor.DEFAULT_RESOURCE_NAME);
+        thenResourceNameOptionsContain(elements, "PIN1:0:0", "PIN2:1:1", GPIOChannelDescriptor.DEFAULT_RESOURCE_NAME);
         thenDirectionOptionsContain(elements, GPIOChannelDescriptor.DEFAULT_RESOURCE_DIRECTION);
         thenTriggerOptionsContain(elements);
     }
@@ -96,12 +97,12 @@ public class GPIOChannelDescriptorTest {
         this.descriptor = new GPIOChannelDescriptor(Arrays.asList(this.gpioService));
     }
 
-    private void givenAvailablePins(String... pins) {
-        Map<Integer, String> available = new HashMap<>();
+    private void getAvailablePinDescriptions(String... pins) {
+        List<KuraGPIODescription> descriptions = new ArrayList<>();
         for (int i = 0; i < pins.length; i++) {
-            available.put(i, pins[i]);
+            descriptions.add(new KuraGPIODescription(i, i, pins[i]));
         }
-        when(gpioService.getAvailablePins()).thenReturn(available);
+        when(gpioService.getAvailablePinDescriptions()).thenReturn(descriptions);
     }
 
     private void givenDirectionConfig(String directionValue) {

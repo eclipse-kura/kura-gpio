@@ -39,6 +39,7 @@ import org.eclipse.kura.driver.Driver;
 import org.eclipse.kura.driver.PreparedRead;
 import org.eclipse.kura.gpio.GPIOService;
 import org.eclipse.kura.gpio.KuraClosedDeviceException;
+import org.eclipse.kura.gpio.KuraGPIODescription;
 import org.eclipse.kura.gpio.KuraGPIODeviceException;
 import org.eclipse.kura.gpio.KuraGPIODirection;
 import org.eclipse.kura.gpio.KuraGPIOMode;
@@ -91,7 +92,7 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
     private static final String READ_FAILED_MESSAGE = "GPIO read operation failed";
     private static final String VALUE_CONVERSION_ERROR_MESSAGE = "Error while converting the retrieved value to the defined typed";
 
-    private Set<String> gpioNames;
+    private Set<KuraGPIODescription> gpioDescriptions;
     private Set<GPIOListener> gpioListeners;
     private final List<GPIOService> gpioServices = new ArrayList<>();
 
@@ -114,7 +115,7 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
     @Activate
     protected synchronized void activate(final Map<String, Object> properties) {
         logger.debug("Activating GPIO Driver...");
-        this.gpioNames = new HashSet<>();
+        this.gpioDescriptions = new HashSet<>();
         this.gpioListeners = new HashSet<>();
         logger.debug("Activating GPIO Driver... Done");
     }
@@ -138,24 +139,24 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
             try {
                 pin.removePinStatusListener(gpioListener);
             } catch (KuraClosedDeviceException | IOException e) {
-                logger.error("Unable to unset listener for pin {}", pin.getName(), e);
+                logger.error("Unable to unset listener for pin {}", pin.getDescription(), e);
             }
         }
         this.gpioListeners.clear();
 
-        for (String name : this.gpioNames) {
+        for (KuraGPIODescription description : this.gpioDescriptions) {
             for (GPIOService service : this.gpioServices) {
-                KuraGPIOPin pin = service.getPinByName(name);
+                KuraGPIOPin pin = service.getPin(description.getController(), description.getLine());
                 if (pin != null && pin.isOpen()) {
                     try {
                         pin.close();
                     } catch (IOException e) {
-                        logger.error("Unable to close GPIO resource {}", pin.getName(), e);
+                        logger.error("Unable to close GPIO resource {}", pin.getDescription(), e);
                     }
                 }
             }
         }
-        this.gpioNames.clear();
+        this.gpioDescriptions.clear();
     }
 
     @Override
@@ -178,7 +179,8 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
         for (final ChannelRecord channelRecord : records) {
             Optional<GPIORequestInfo> requestInfo = GPIORequestInfo.extract(channelRecord);
             if (requestInfo.isPresent()) {
-                this.gpioNames.add(requestInfo.get().resourceName);
+                KuraGPIODescription description = extractGPIODescription(requestInfo.get().resourceName);
+                this.gpioDescriptions.add(description);
                 runReadRequest(requestInfo.get());
             }
         }
@@ -202,7 +204,8 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
                 Optional<GPIORequestInfo> requestInfo = GPIORequestInfo.extract(channelRecord);
                 if (requestInfo.isPresent()) {
                     preparedRead.requestInfos.add(requestInfo.get());
-                    this.gpioNames.add(requestInfo.get().resourceName);
+                    KuraGPIODescription description = extractGPIODescription(requestInfo.get().resourceName);
+                    this.gpioDescriptions.add(description);
                 }
             }
             return preparedRead;
@@ -215,7 +218,7 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
         String name = GPIOChannelDescriptor.getResourceName(channelConfig);
         KuraGPIODirection direction = GPIOChannelDescriptor.getResourceDirection(channelConfig);
         if (!GPIOChannelDescriptor.DEFAULT_RESOURCE_NAME.equals(name) && direction != null) {
-            this.gpioNames.add(name);
+            this.gpioDescriptions.add(extractGPIODescription(name));
             KuraGPIOPin pin;
             if (KuraGPIODirection.INPUT.equals(direction)) {
                 pin = getPin(name, direction, KuraGPIOMode.INPUT_PULL_UP,
@@ -231,7 +234,7 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
                 try {
                     pin.addPinStatusListener(gpioListener);
                 } catch (KuraClosedDeviceException | IOException e) {
-                    logger.error("Unable to set listener for pin {}", name, e);
+                    logger.error("Unable to set listener for pin {}", pin.getDescription(), e);
                 }
             }
         }
@@ -247,7 +250,7 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
                     gpioListener.getPin().removePinStatusListener(gpioListener);
                     iterator.remove();
                 } catch (KuraClosedDeviceException | IOException e) {
-                    logger.error("Unable to unset listener for pin {}", gpioListener.getPin().getName(), e);
+                    logger.error("Unable to unset listener for pin {}", gpioListener.getPin().getDescription(), e);
                 }
             }
         }
@@ -259,7 +262,7 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
                 && requestInfo.resourceDirection != null) {
             try {
                 final TypedValue<Boolean> value = getBooleanValue(channelRecord.getValue());
-                this.gpioNames.add(requestInfo.resourceName);
+                this.gpioDescriptions.add(extractGPIODescription(requestInfo.resourceName));
                 KuraGPIOPin pin = getPin(requestInfo.resourceName, requestInfo.resourceDirection,
                         requestInfo.resourceMode, requestInfo.resourceTrigger);
                 if (pin != null) {
@@ -285,13 +288,15 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
             KuraGPIOTrigger resourceTrigger) {
         KuraGPIOPin pin = null;
         for (GPIOService service : this.gpioServices) {
-            pin = service.getPinByName(resourceName, resourceDirection, resourceMode, resourceTrigger);
+            KuraGPIODescription description = extractGPIODescription(resourceName);
+            pin = service.getPin(description.getController(), description.getLine(), resourceDirection, resourceMode,
+                    resourceTrigger);
             if (pin != null) {
                 if (!pin.isOpen()) {
                     try {
                         pin.open();
                     } catch (KuraGPIODeviceException | KuraUnavailableDeviceException | IOException e) {
-                        logger.error("Unable to open GPIO resource {}", pin.getName(), e);
+                        logger.error("Unable to open GPIO resource {}", description, e);
                     }
                 }
                 break;
@@ -389,6 +394,24 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
             }
         } else {
             setFailureRecord(channelRecord, READ_FAILED_MESSAGE);
+        }
+    }
+
+    private KuraGPIODescription extractGPIODescription(String resourceName) {
+        String[] items = resourceName.split(":");
+        if (items.length == 3) {
+            try {
+                String name = items[0];
+                int controller = Integer.parseInt(items[1]);
+                int line = Integer.parseInt(items[2]);
+                return new KuraGPIODescription(controller, line, name);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException(
+                        "Unable to extract GPIO description from resource name " + resourceName, e);
+            }
+        } else {
+            throw new IllegalArgumentException(
+                    "Unable to extract GPIO description from resource name " + resourceName);
         }
     }
 

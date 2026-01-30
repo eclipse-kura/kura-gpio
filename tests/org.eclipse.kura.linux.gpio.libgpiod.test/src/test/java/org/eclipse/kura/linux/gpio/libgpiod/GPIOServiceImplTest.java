@@ -161,42 +161,44 @@ public class GPIOServiceImplTest extends CommonSteps {
 
     @Test
     public void testGetPinByGpiochipAndLineWithoutActivation() {
-        givenGPIOServicePin(1,2);
+        givenGPIOServicePin(1, 2);
         givenGPIOServiceImpl();
 
-        whenGetPinByGpiochipAndLine(1,2);
+        whenGetPinByGpiochipAndLine(1, 2);
 
         thenExceptionOccurred(IllegalStateException.class);
     }
 
     @Test
     public void testGetPinByGpiochipAndLineWithActivation() {
-        givenGPIOServicePin(1,2);
+        givenGPIOServicePin(1, 2);
         givenGPIOServiceImpl();
         givenActivatedGPIOService();
 
-        whenGetPinByGpiochipAndLine(1,2);
+        whenGetPinByGpiochipAndLine(1, 2);
 
         thenPinIsNotNull();
     }
 
     @Test
     public void testGetPinByGpiochipAndLineWithParametersWithoutActivation() {
-        givenGPIOServicePin(2,2, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.BOTH_EDGES);
+        givenGPIOServicePin(2, 2, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.BOTH_EDGES);
         givenGPIOServiceImpl();
 
-        whenGetPinByGpiochipAndLine(2,2, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.BOTH_EDGES);
+        whenGetPinByGpiochipAndLine(2, 2, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP,
+                KuraGPIOTrigger.BOTH_EDGES);
 
         thenExceptionOccurred(IllegalStateException.class);
     }
 
     @Test
     public void testGetPinByGpiochipAndLineWithParametersWithActivation() {
-        givenGPIOServicePin(2,2, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.BOTH_EDGES);
+        givenGPIOServicePin(2, 2, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.BOTH_EDGES);
         givenGPIOServiceImpl();
         givenActivatedGPIOService();
 
-        whenGetPinByGpiochipAndLine(2,2, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.BOTH_EDGES);
+        whenGetPinByGpiochipAndLine(2, 2, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP,
+                KuraGPIOTrigger.BOTH_EDGES);
 
         thenPinIsNotNull();
     }
@@ -254,15 +256,15 @@ public class GPIOServiceImplTest extends CommonSteps {
         when(GPIOServiceMock.getPinByTerminal(pinTerminal, direction, mode, trigger)).thenReturn(pinMock);
     }
 
-        private void givenGPIOServicePin(int pinGpiochip, int pinLine) {
+    private void givenGPIOServicePin(int pinGpiochip, int pinLine) {
         KuraGPIOPin pinMock = mock(KuraGPIOPin.class);
-        when(GPIOServiceMock.getPinByGpiochipAndLine(pinGpiochip, pinLine)).thenReturn(pinMock);
+        when(GPIOServiceMock.getPin(pinGpiochip, pinLine)).thenReturn(pinMock);
     }
 
     private void givenGPIOServicePin(int pinGpiochip, int pinLine, KuraGPIODirection direction, KuraGPIOMode mode,
             KuraGPIOTrigger trigger) {
         KuraGPIOPin pinMock = mock(KuraGPIOPin.class);
-        when(GPIOServiceMock.getPinByGpiochipAndLine(pinGpiochip, pinLine, direction, mode, trigger)).thenReturn(pinMock);
+        when(GPIOServiceMock.getPin(pinGpiochip, pinLine, direction, mode, trigger)).thenReturn(pinMock);
     }
 
     /*
@@ -321,7 +323,7 @@ public class GPIOServiceImplTest extends CommonSteps {
 
     private void whenGetPinByGpiochipAndLine(int gpiochip, int line) {
         try {
-            this.resultPin = this.gpioServiceImpl.getPinByGpiochipAndLine(gpiochip, line);
+            this.resultPin = this.gpioServiceImpl.getPin(gpiochip, line);
         } catch (Exception e) {
             this.occurredException = e;
         }
@@ -330,7 +332,7 @@ public class GPIOServiceImplTest extends CommonSteps {
     private void whenGetPinByGpiochipAndLine(int gpiochip, int line, KuraGPIODirection direction, KuraGPIOMode mode,
             KuraGPIOTrigger trigger) {
         try {
-            this.resultPin = this.gpioServiceImpl.getPinByGpiochipAndLine(gpiochip, line, direction, mode, trigger);
+            this.resultPin = this.gpioServiceImpl.getPin(gpiochip, line, direction, mode, trigger);
         } catch (Exception e) {
             this.occurredException = e;
         }

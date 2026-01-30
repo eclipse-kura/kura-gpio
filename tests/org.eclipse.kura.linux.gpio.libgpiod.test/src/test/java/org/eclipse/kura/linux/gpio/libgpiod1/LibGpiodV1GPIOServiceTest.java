@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
+import org.eclipse.kura.gpio.KuraGPIODescription;
 import org.eclipse.kura.gpio.KuraGPIODirection;
 import org.eclipse.kura.gpio.KuraGPIOMode;
 import org.eclipse.kura.gpio.KuraGPIOPin;
@@ -60,7 +61,7 @@ public class LibGpiodV1GPIOServiceTest extends CommonSteps {
         this.nativeInterfaceMock = mock(LibGpiodV1Native.class);
         this.nativeMock.when(() -> Native.load("gpiod", LibGpiodV1Native.class)).thenReturn(this.nativeInterfaceMock);
         this.nativeInterfaceWrapperMock = mockStatic(LibGpiodV1NativeWrapper.class);
-        this.nativeInterfaceWrapperMock.when(() -> LibGpiodV1NativeWrapper.getInstance())
+        this.nativeInterfaceWrapperMock.when(LibGpiodV1NativeWrapper::getInstance)
                 .thenReturn(this.nativeInterfaceMock);
 
         Pointer chip0 = Pointer.createConstant(0);
@@ -264,37 +265,37 @@ public class LibGpiodV1GPIOServiceTest extends CommonSteps {
     }
 
     @Test
-    public void testGetPinByGpiochipAndLineWithNegativeGpiochip() {
+    public void testGetPinWithNegativeGpiochip() {
         givenV1GPIOService();
 
-        whenV1ServiceGetPinByGpiochipAndLine(-1,1);
+        whenV1ServiceGetPin(-1, 1);
 
         thenExceptionOccurred(IllegalArgumentException.class);
     }
 
     @Test
-    public void testGetPinByGpiochipAndLineWithNegativeLine() {
+    public void testGetPinWithNegativeLine() {
         givenV1GPIOService();
 
-        whenV1ServiceGetPinByGpiochipAndLine(1,-1);
+        whenV1ServiceGetPin(1, -1);
 
         thenExceptionOccurred(IllegalArgumentException.class);
     }
 
     @Test
-    public void testGetPinByGpiochipAndLineWithNegativeValues() {
+    public void testGetPinWithNegativeValues() {
         givenV1GPIOService();
 
-        whenV1ServiceGetPinByGpiochipAndLine(-1,-1);
+        whenV1ServiceGetPin(-1, -1);
 
         thenExceptionOccurred(IllegalArgumentException.class);
     }
 
     @Test
-    public void testGetPinByGpiochipAndLineWithValidValues() {
+    public void testGetPinWithValidValues() {
         givenV1GPIOService();
 
-        whenV1ServiceGetPinByGpiochipAndLine(2,3);
+        whenV1ServiceGetPin(2, 3);
 
         thenNoExceptionOccurred();
         thenPinIsNotNull();
@@ -302,10 +303,10 @@ public class LibGpiodV1GPIOServiceTest extends CommonSteps {
     }
 
     @Test
-    public void testGetPinByGpiochipAndLineWithParameters() {
+    public void testGetPinWithParameters() {
         givenV1GPIOService();
 
-        whenV1ServiceGetPinByGpiochipAndLine(2,3, KuraGPIODirection.OUTPUT, KuraGPIOMode.OUTPUT_PUSH_PULL,
+        whenV1ServiceGetPin(2, 3, KuraGPIODirection.OUTPUT, KuraGPIOMode.OUTPUT_PUSH_PULL,
                 KuraGPIOTrigger.NONE);
 
         thenNoExceptionOccurred();
@@ -314,38 +315,38 @@ public class LibGpiodV1GPIOServiceTest extends CommonSteps {
     }
 
     @Test
-    public void testGetPinByGpiochipAndLineNotInAvailablePins() {
+    public void testGetPinNotInAvailablePins() {
         givenV1GPIOService();
 
-        whenV1ServiceGetPinByGpiochipAndLine(9,999);
+        whenV1ServiceGetPin(9, 999);
 
         thenExceptionOccurred(IllegalArgumentException.class);
     }
 
     @Test
-    public void testGetPinByGpiochipAndLineNotValid() {
+    public void testGetPinNotValid() {
         givenV1GPIOService();
 
-        whenV1ServiceGetPinByGpiochipAndLine(2,33);
+        whenV1ServiceGetPin(2, 33);
 
         thenExceptionOccurred(IllegalArgumentException.class);
     }
 
     @Test
-    public void testGetPinByGpiochipAndLineWithoutChip() {
+    public void testGetPinWithoutChip() {
         givenV1GPIOService();
 
-        whenV1ServiceGetPinByGpiochipAndLine(5,23);
+        whenV1ServiceGetPin(6, 23);
 
         thenExceptionOccurred(IllegalArgumentException.class);
     }
 
     @Test
-    public void testGetPinByGpiochipAndLineFromCache() {
+    public void testGetPinFromCache() {
         givenV1GPIOService();
 
-        whenV1ServiceGetPinByGpiochipAndLine(2,3);
-        whenV1ServiceGetPinByGpiochipAndLineAgain(2,3);
+        whenV1ServiceGetPin(2, 3);
+        whenV1ServiceGetPinAgain(2, 3);
         thenNoExceptionOccurred();
         thenPinsAreSame();
     }
@@ -416,42 +417,6 @@ public class LibGpiodV1GPIOServiceTest extends CommonSteps {
         thenAvailablePinsIsEmpty();
     }
 
-    @Test
-    public void testServiceInitializationWithWrongPinName() throws IOException {
-        givenV1GPIOServiceNotInitialized(DEVICE_FOLDER);
-        givenTmpGpioChips(3);
-
-        whenV1ServiceIsInitialized();
-        whenV1ServiceGetAvailablePins();
-
-        thenNoExceptionOccurred();
-        thenAvailablePinsIsEmpty();
-    }
-
-    @Test
-    public void testServiceInitializationWithEmptyPinName() throws IOException {
-        givenV1GPIOServiceNotInitialized(DEVICE_FOLDER);
-        givenTmpGpioChips(4);
-
-        whenV1ServiceIsInitialized();
-        whenV1ServiceGetAvailablePins();
-
-        thenNoExceptionOccurred();
-        thenAvailablePinsIsEmpty();
-    }
-
-    @Test
-    public void testServiceInitializationWithNullPinName() throws IOException {
-        givenV1GPIOServiceNotInitialized(DEVICE_FOLDER);
-        givenTmpGpioChips(5);
-
-        whenV1ServiceIsInitialized();
-        whenV1ServiceGetAvailablePins();
-
-        thenNoExceptionOccurred();
-        thenAvailablePinsIsEmpty();
-    }
-
     /*
      * Given
      */
@@ -461,9 +426,9 @@ public class LibGpiodV1GPIOServiceTest extends CommonSteps {
 
             @Override
             public void initialize() {
-                this.availablePins.put("GPIO0_1", 1);
-                this.availablePins.put("GPIO2_3", 2003);
-                this.availablePins.put("GPIO5_23", 5023);
+                this.availablePinDescriptions.add(new KuraGPIODescription(0, 1, "GPIO0_1"));
+                this.availablePinDescriptions.add(new KuraGPIODescription(2, 3, "GPIO2_3"));
+                this.availablePinDescriptions.add(new KuraGPIODescription(5, 23, "GPIO5_23"));
                 this.initialized.set(true);
             }
 
@@ -558,26 +523,27 @@ public class LibGpiodV1GPIOServiceTest extends CommonSteps {
         }
     }
 
-    private void whenV1ServiceGetPinByGpiochipAndLine(int gpiochip, int line) {
+    private void whenV1ServiceGetPin(int gpiochip, int line) {
         try {
-            this.resultPin = this.v1Service.getPinByGpiochipAndLine(gpiochip, line);
+            this.resultPin = this.v1Service.getPin(gpiochip, line);
         } catch (Exception e) {
             this.occurredException = e;
         }
     }
 
-    private void whenV1ServiceGetPinByGpiochipAndLineAgain(int gpiochip, int line) {
+    private void whenV1ServiceGetPinAgain(int gpiochip, int line) {
         try {
-            this.resultPinAgain = this.v1Service.getPinByGpiochipAndLine(gpiochip, line);
+            this.resultPinAgain = this.v1Service.getPin(gpiochip, line);
         } catch (Exception e) {
             this.occurredException = e;
         }
     }
 
-    private void whenV1ServiceGetPinByGpiochipAndLine(int gpiochip, int line, KuraGPIODirection direction, KuraGPIOMode mode,
+    private void whenV1ServiceGetPin(int gpiochip, int line, KuraGPIODirection direction,
+            KuraGPIOMode mode,
             KuraGPIOTrigger trigger) {
         try {
-            this.resultPin = this.v1Service.getPinByGpiochipAndLine(gpiochip, line, direction, mode, trigger);
+            this.resultPin = this.v1Service.getPin(gpiochip, line, direction, mode, trigger);
         } catch (Exception e) {
             this.occurredException = e;
         }

@@ -106,9 +106,6 @@ public abstract class LibGpiodGPIOService {
     public KuraGPIOPin getPinByName(String pinName, KuraGPIODirection direction, KuraGPIOMode mode,
             KuraGPIOTrigger trigger) {
         List<KuraGPIOPin> pins = getPins(pinName, direction, mode, trigger);
-        if (pins.isEmpty()) {
-            throw new IllegalArgumentException("Pin not found: " + pinName);
-        }
         return pins.get(0);
     }
 
@@ -147,8 +144,6 @@ public abstract class LibGpiodGPIOService {
 
         initialize();
 
-        List<KuraGPIOPin> pins = new ArrayList<>();
-
         // Retrieve gpio descriptions from available pins that matches the given name.
         List<KuraGPIODescription> nameMatchingDescriptions = new ArrayList<>();
         this.availablePinDescriptions.forEach(description -> {
@@ -157,6 +152,12 @@ public abstract class LibGpiodGPIOService {
                 nameMatchingDescriptions.add(description);
             }
         });
+
+        if (nameMatchingDescriptions.isEmpty()) {
+            throw new IllegalArgumentException("Pin not found: " + name);
+        }
+
+        List<KuraGPIOPin> pins = new ArrayList<>();
 
         // Try to get the cached pins, otherwise create a new one.
         nameMatchingDescriptions.forEach(description -> {
@@ -186,20 +187,25 @@ public abstract class LibGpiodGPIOService {
 
         initialize();
 
-        Optional<KuraGPIOPin> cachedPin = getCachedPin(controller, line, direction, mode, trigger);
-        if (cachedPin.isPresent()) {
-            return cachedPin.get();
-        }
-
+        // Check if the pin description is present in the available pin list and get the
+        // full description (i.e. name).
         KuraGPIODescription description = new KuraGPIODescription(controller, line);
-        // Retrieve pin description from available pin list to get full details (i.e.
-        // name).
+        if (!this.availablePinDescriptions.contains(description)) {
+            throw new IllegalArgumentException(
+                    "Pin not found: controller=" + controller + ", line=" + line);
+        }
         for (KuraGPIODescription availableDescription : this.availablePinDescriptions) {
             if (availableDescription.equals(description)) {
                 description = availableDescription;
                 break;
             }
         }
+
+        Optional<KuraGPIOPin> cachedPin = getCachedPin(controller, line, direction, mode, trigger);
+        if (cachedPin.isPresent()) {
+            return cachedPin.get();
+        }
+
         KuraGPIOPin pin = createPin(description, direction, mode, trigger);
 
         this.pinCache.put(description, pin);

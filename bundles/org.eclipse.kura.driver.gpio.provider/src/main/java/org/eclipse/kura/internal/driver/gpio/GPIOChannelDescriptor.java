@@ -25,6 +25,7 @@ import org.eclipse.kura.driver.ChannelDescriptor;
 import org.eclipse.kura.gpio.GPIOService;
 import org.eclipse.kura.gpio.KuraGPIODescription;
 import org.eclipse.kura.gpio.KuraGPIODirection;
+import org.eclipse.kura.gpio.KuraGPIOMode;
 import org.eclipse.kura.gpio.KuraGPIOTrigger;
 
 /**
@@ -34,6 +35,7 @@ import org.eclipse.kura.gpio.KuraGPIOTrigger;
  * <ul>
  * <li>resource.name</li> denotes the GPIO number/identifier
  * <li>resource.direction</li> denotes the GPIO direction
+ * <li>resource.mode</li> denotes the GPIO mode
  * <li>resource.trigger</li> denotes the GPIO event that triggers a listener
  * </ul>
  */
@@ -41,9 +43,11 @@ public final class GPIOChannelDescriptor implements ChannelDescriptor {
 
     protected static final String DEFAULT_RESOURCE_NAME = "#select resource";
     protected static final String DEFAULT_RESOURCE_DIRECTION = "#select direction";
+    protected static final String DEFAULT_RESOURCE_MODE = "#select mode";
 
     private static final String RESOURCE_NAME = "resource.name";
     private static final String RESOURCE_DIRECTION = "resource.direction";
+    private static final String RESOURCE_MODE = "resource.mode";
     private static final String RESOURCE_TRIGGER = "resource.trigger";
 
     private List<GPIOService> gpioServices;
@@ -121,6 +125,16 @@ public final class GPIOChannelDescriptor implements ChannelDescriptor {
         addOptions(resourceDirection, KuraGPIODirection.values(), DEFAULT_RESOURCE_DIRECTION);
         elements.add(resourceDirection);
 
+        final Tad resourceMode = new Tad();
+        resourceMode.setName(RESOURCE_MODE);
+        resourceMode.setId(RESOURCE_MODE);
+        resourceMode.setDescription(RESOURCE_MODE);
+        resourceMode.setType(Tscalar.STRING);
+        resourceMode.setRequired(true);
+        resourceMode.setDefault(DEFAULT_RESOURCE_MODE);
+        addOptions(resourceMode, KuraGPIOMode.values(), DEFAULT_RESOURCE_MODE);
+        elements.add(resourceMode);
+
         final Tad resourceTriggers = new Tad();
         resourceTriggers.setName(RESOURCE_TRIGGER);
         resourceTriggers.setId(RESOURCE_TRIGGER);
@@ -144,6 +158,15 @@ public final class GPIOChannelDescriptor implements ChannelDescriptor {
             return null;
         } else {
             return KuraGPIODirection.valueOf(direction);
+        }
+    }
+
+    static KuraGPIOMode getResourceMode(Map<String, Object> properties) {
+        String mode = (String) properties.get(RESOURCE_MODE);
+        if (DEFAULT_RESOURCE_MODE.equals(mode)) {
+            return null;
+        } else {
+            return KuraGPIOMode.valueOf(mode);
         }
     }
 

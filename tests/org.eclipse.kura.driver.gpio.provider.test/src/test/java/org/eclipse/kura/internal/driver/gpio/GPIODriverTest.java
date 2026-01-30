@@ -23,10 +23,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.kura.KuraException;
@@ -72,7 +70,6 @@ public class GPIODriverTest {
 	private ChannelRecord channelRecord;
 	private ChannelDescriptor channelDescriptor;
 	private PreparedRead preparedRead;
-	private List<KuraGPIOPin> gpioPins = new ArrayList<>();
 
 	@Test
 	public void shouldActivateDriver() {
@@ -168,7 +165,7 @@ public class GPIODriverTest {
 		givenBindGPIOService();
 		givenGPIOPin("AwesomePin", 1, 1, KuraGPIODirection.OUTPUT, KuraGPIOMode.OUTPUT_OPEN_DRAIN,
 				KuraGPIOTrigger.NONE);
-		givenChannelRecordWithMissingDirection();
+		givenChannelRecordWithDefaultProperties();
 
 		whenDriverIsActivated(Collections.emptyMap());
 		whenWriteOperationIsInvoked();
@@ -302,16 +299,18 @@ public class GPIODriverTest {
 		this.config = new HashMap<>();
 		this.config.put("resource.name", pinName);
 		this.config.put("resource.direction", KuraGPIODirection.OUTPUT.name());
+		this.config.put("resource.mode", KuraGPIOMode.OUTPUT_OPEN_DRAIN.name());
 		this.config.put("resource.trigger", KuraGPIOTrigger.NONE.name());
 		this.channelRecord.setChannelConfig(config);
 	}
 
-	private void givenChannelRecordWithMissingDirection() {
+	private void givenChannelRecordWithDefaultProperties() {
 		this.channelRecord = ChannelRecord.createWriteRecord("PIN-MISSING",
 				TypedValues.newBooleanValue(true));
 		this.config = new HashMap<>();
 		this.config.put("resource.name", GPIOChannelDescriptor.DEFAULT_RESOURCE_NAME);
 		this.config.put("resource.direction", GPIOChannelDescriptor.DEFAULT_RESOURCE_DIRECTION);
+		this.config.put("resource.mode", GPIOChannelDescriptor.DEFAULT_RESOURCE_MODE);
 		this.config.put("resource.trigger", KuraGPIOTrigger.NONE.name());
 		channelRecord.setChannelConfig(config);
 	}
@@ -322,6 +321,7 @@ public class GPIODriverTest {
 		this.config = new HashMap<>();
 		this.config.put("resource.name", pinName);
 		this.config.put("resource.direction", KuraGPIODirection.INPUT.name());
+		this.config.put("resource.mode", KuraGPIOMode.INPUT_PULL_UP.name());
 		this.config.put("resource.trigger", KuraGPIOTrigger.NONE.name());
 		channelRecord.setChannelConfig(config);
 
@@ -332,6 +332,7 @@ public class GPIODriverTest {
 		this.config = new HashMap<>();
 		this.config.put("resource.name", pinName);
 		this.config.put("resource.direction", direction.name());
+		this.config.put("resource.mode", KuraGPIOMode.INPUT_PULL_UP.name());
 		this.config.put("resource.trigger", KuraGPIOTrigger.NONE.name());
 		this.config.put("+name", "listener-channel");
 		this.config.put("+value.type", DataType.BOOLEAN.name());

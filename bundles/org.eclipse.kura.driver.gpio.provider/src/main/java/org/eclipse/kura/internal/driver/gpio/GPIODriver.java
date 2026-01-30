@@ -217,15 +217,19 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
             final ChannelListener listener) throws ConnectionException {
         String name = GPIOChannelDescriptor.getResourceName(channelConfig);
         KuraGPIODirection direction = GPIOChannelDescriptor.getResourceDirection(channelConfig);
+        KuraGPIOMode mode = GPIOChannelDescriptor.getResourceMode(channelConfig);
+        KuraGPIOTrigger trigger = GPIOChannelDescriptor.getResourceTrigger(channelConfig);
         if (!GPIOChannelDescriptor.DEFAULT_RESOURCE_NAME.equals(name) && direction != null) {
             this.gpioDescriptions.add(extractGPIODescription(name));
             KuraGPIOPin pin;
-            if (KuraGPIODirection.INPUT.equals(direction)) {
-                pin = getPin(name, direction, KuraGPIOMode.INPUT_PULL_UP,
-                        GPIOChannelDescriptor.getResourceTrigger(channelConfig));
+            // For backport compatibility, if mode if not set, configure it depending on
+            // direction
+            if (mode == null || GPIOChannelDescriptor.DEFAULT_RESOURCE_MODE.equals(mode.name())) {
+                pin = KuraGPIODirection.INPUT.equals(direction)
+                        ? getPin(name, direction, KuraGPIOMode.INPUT_PULL_UP, trigger)
+                        : getPin(name, direction, KuraGPIOMode.OUTPUT_OPEN_DRAIN, trigger);
             } else {
-                pin = getPin(name, direction, KuraGPIOMode.OUTPUT_OPEN_DRAIN,
-                        GPIOChannelDescriptor.getResourceTrigger(channelConfig));
+                pin = getPin(name, direction, mode, trigger);
             }
             if (pin != null) {
                 GPIOListener gpioListener = new GPIOListener(pin, (String) channelConfig.get("+name"),
@@ -447,10 +451,17 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
             request.resourceName = GPIOChannelDescriptor.getResourceName(channelConfig);
             request.resourceDirection = GPIOChannelDescriptor.getResourceDirection(channelConfig);
             request.resourceTrigger = GPIOChannelDescriptor.getResourceTrigger(channelConfig);
-            if (KuraGPIODirection.INPUT.equals(request.resourceDirection)) {
-                request.resourceMode = KuraGPIOMode.INPUT_PULL_UP;
+            KuraGPIOMode mode = GPIOChannelDescriptor.getResourceMode(channelConfig);
+            if (mode == null || GPIOChannelDescriptor.DEFAULT_RESOURCE_MODE.equals(mode.name())) {
+                // For backport compatibility, if mode if not set, configure it depending on
+                // direction
+                if (KuraGPIODirection.INPUT.equals(request.resourceDirection)) {
+                    request.resourceMode = KuraGPIOMode.INPUT_PULL_UP;
+                } else {
+                    request.resourceMode = KuraGPIOMode.OUTPUT_OPEN_DRAIN;
+                }
             } else {
-                request.resourceMode = KuraGPIOMode.OUTPUT_OPEN_DRAIN;
+                request.resourceMode = GPIOChannelDescriptor.getResourceMode(channelConfig);
             }
 
             return Optional.of(request);

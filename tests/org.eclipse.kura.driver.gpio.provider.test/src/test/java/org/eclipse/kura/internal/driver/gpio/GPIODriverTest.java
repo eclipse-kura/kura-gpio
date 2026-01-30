@@ -23,8 +23,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.kura.KuraException;
@@ -38,6 +40,7 @@ import org.eclipse.kura.driver.Driver.ConnectionException;
 import org.eclipse.kura.driver.PreparedRead;
 import org.eclipse.kura.gpio.GPIOService;
 import org.eclipse.kura.gpio.KuraClosedDeviceException;
+import org.eclipse.kura.gpio.KuraGPIODescription;
 import org.eclipse.kura.gpio.KuraGPIODeviceException;
 import org.eclipse.kura.gpio.KuraGPIODirection;
 import org.eclipse.kura.gpio.KuraGPIOMode;
@@ -69,6 +72,7 @@ public class GPIODriverTest {
 	private ChannelRecord channelRecord;
 	private ChannelDescriptor channelDescriptor;
 	private PreparedRead preparedRead;
+	private List<KuraGPIOPin> gpioPins = new ArrayList<>();
 
 	@Test
 	public void shouldActivateDriver() {
@@ -94,15 +98,16 @@ public class GPIODriverTest {
 	public void shouldDeactivateDriver()
 			throws ConnectionException, IOException, KuraUnavailableDeviceException, KuraClosedDeviceException {
 		givenBindGPIOService();
-		givenGPIOPin("AwesomePin");
-		givenInputChannelRecord(this.gpioPin.getDescription().getName().get(), DataType.BOOLEAN, true);
+		givenGPIOPin("AwesomePin", 1, 1, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.NONE);
+		givenInputChannelRecord(this.gpioPin.getDescription().toString(), DataType.BOOLEAN, true);
 
 		whenDriverIsActivated(Collections.emptyMap());
 		whenReadOperationIsInvoked();
 		whenDriverIsDeactivated();
 
 		thenDriverIsNotNull();
-		thenGPIOServiceGetPinByNameIsCalled(1, this.gpioPin.getDescription().getName().get());
+		thenGPIOServiceGetPinsIsCalled(1, 1, 1, KuraGPIODirection.INPUT,
+				KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.NONE);
 		thenGpioPinIsClosed();
 	}
 
@@ -121,15 +126,16 @@ public class GPIODriverTest {
 	public void shouldDisconnect()
 			throws ConnectionException, IOException, KuraUnavailableDeviceException, KuraClosedDeviceException {
 		givenBindGPIOService();
-		givenGPIOPin("AwesomePin");
-		givenInputChannelRecord(this.gpioPin.getDescription().getName().get(), DataType.BOOLEAN, true);
+		givenGPIOPin("AwesomePin", 1, 1, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.NONE);
+		givenInputChannelRecord(this.gpioPin.getDescription().toString(), DataType.BOOLEAN, true);
 
 		whenDriverIsActivated(Collections.emptyMap());
 		whenReadOperationIsInvoked();
 		whenDriverIsDisconnected();
 
 		thenDriverIsNotNull();
-		thenGPIOServiceGetPinByNameIsCalled(1, this.gpioPin.getDescription().getName().get());
+		thenGPIOServiceGetPinsIsCalled(1, 1, 1, KuraGPIODirection.INPUT,
+				KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.NONE);
 		thenGpioPinIsClosed();
 	}
 
@@ -147,8 +153,9 @@ public class GPIODriverTest {
 	@Test
 	public void shouldWriteBooleanValueToOutputPin() throws Exception {
 		givenBindGPIOService();
-		givenGPIOPin("AwesomePin", KuraGPIODirection.OUTPUT, KuraGPIOMode.OUTPUT_OPEN_DRAIN, KuraGPIOTrigger.NONE);
-		givenOutputChannelRecord(this.gpioPin.getDescription().getName().get(), true);
+		givenGPIOPin("AwesomePin", 1, 1, KuraGPIODirection.OUTPUT, KuraGPIOMode.OUTPUT_OPEN_DRAIN,
+				KuraGPIOTrigger.NONE);
+		givenOutputChannelRecord(this.gpioPin.getDescription().toString(), true);
 
 		whenDriverIsActivated(Collections.emptyMap());
 		whenWriteOperationIsInvoked();
@@ -159,7 +166,8 @@ public class GPIODriverTest {
 	@Test
 	public void shouldMarkFailureWhenWriteHasMissingConfig() throws Exception {
 		givenBindGPIOService();
-		givenGPIOPin("AwesomePin", KuraGPIODirection.OUTPUT, KuraGPIOMode.OUTPUT_OPEN_DRAIN, KuraGPIOTrigger.NONE);
+		givenGPIOPin("AwesomePin", 1, 1, KuraGPIODirection.OUTPUT, KuraGPIOMode.OUTPUT_OPEN_DRAIN,
+				KuraGPIOTrigger.NONE);
 		givenChannelRecordWithMissingDirection();
 
 		whenDriverIsActivated(Collections.emptyMap());
@@ -172,8 +180,8 @@ public class GPIODriverTest {
 	public void shouldReadValueAndPopulateChannelRecord() throws KuraUnavailableDeviceException,
 			KuraClosedDeviceException, IOException, ConnectionException {
 		givenBindGPIOService();
-		givenGPIOPin("AwesomePin", KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.NONE);
-		givenInputChannelRecord(this.gpioPin.getDescription().getName().get(), DataType.BOOLEAN, true);
+		givenGPIOPin("AwesomePin", 1, 1, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.NONE);
+		givenInputChannelRecord(this.gpioPin.getDescription().toString(), DataType.BOOLEAN, true);
 
 		whenDriverIsActivated(Collections.emptyMap());
 		whenReadOperationIsInvoked();
@@ -184,8 +192,8 @@ public class GPIODriverTest {
 	@Test
 	public void shouldRegisterChannelListener() throws ConnectionException, KuraClosedDeviceException, IOException {
 		givenBindGPIOService();
-		givenGPIOPin("AwesomePin", KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.NONE);
-		givenListenerConfig(this.gpioPin.getDescription().getName().get(), KuraGPIODirection.INPUT);
+		givenGPIOPin("AwesomePin", 1, 1, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.NONE);
+		givenListenerConfig(this.gpioPin.getDescription().toString(), KuraGPIODirection.INPUT);
 
 		whenDriverIsActivated(Collections.emptyMap());
 		whenRegisterListenerIsInvoked();
@@ -196,8 +204,8 @@ public class GPIODriverTest {
 	@Test
 	public void shouldUnregisterChannelListener() throws ConnectionException, KuraClosedDeviceException, IOException {
 		givenBindGPIOService();
-		givenGPIOPin("AwesomePin", KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.NONE);
-		givenListenerConfig(this.gpioPin.getDescription().getName().get(), KuraGPIODirection.INPUT);
+		givenGPIOPin("AwesomePin", 1, 1, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.NONE);
+		givenListenerConfig(this.gpioPin.getDescription().toString(), KuraGPIODirection.INPUT);
 
 		whenDriverIsActivated(Collections.emptyMap());
 		whenRegisterListenerIsInvoked();
@@ -209,8 +217,8 @@ public class GPIODriverTest {
 	@Test
 	public void shouldDisconnectAndCleanupResources() throws Exception {
 		givenBindGPIOService();
-		givenGPIOPin("AwesomePin", KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.NONE);
-		givenListenerConfig(this.gpioPin.getDescription().getName().get(), KuraGPIODirection.INPUT);
+		givenGPIOPin("AwesomePin", 1, 1, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.NONE);
+		givenListenerConfig(this.gpioPin.getDescription().toString(), KuraGPIODirection.INPUT);
 
 		whenDriverIsActivated(Collections.emptyMap());
 		whenRegisterListenerIsInvoked();
@@ -223,8 +231,8 @@ public class GPIODriverTest {
 	@Test
 	public void shouldPrepareReadAndExecuteSuccessfully() throws IOException, ConnectionException, KuraException {
 		givenBindGPIOService();
-		givenGPIOPin("AwesomePin", KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.NONE);
-		givenInputChannelRecord(this.gpioPin.getDescription().getName().get(), DataType.BOOLEAN, true);
+		givenGPIOPin("AwesomePin", 1, 1, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.NONE);
+		givenInputChannelRecord(this.gpioPin.getDescription().toString(), DataType.BOOLEAN, true);
 
 		whenDriverIsActivated(Collections.emptyMap());
 		whenPreparedReadIsCreated();
@@ -237,8 +245,9 @@ public class GPIODriverTest {
 	public void shouldFailWriteWhenPinSetThrowsException()
 			throws KuraUnavailableDeviceException, KuraClosedDeviceException, IOException, ConnectionException {
 		givenBindGPIOService();
-		givenGPIOPin("AwesomePin", KuraGPIODirection.OUTPUT, KuraGPIOMode.OUTPUT_OPEN_DRAIN, KuraGPIOTrigger.NONE);
-		givenOutputChannelRecord(this.gpioPin.getDescription().getName().get(), true);
+		givenGPIOPin("AwesomePin", 1, 1, KuraGPIODirection.OUTPUT, KuraGPIOMode.OUTPUT_OPEN_DRAIN,
+				KuraGPIOTrigger.NONE);
+		givenOutputChannelRecord(this.gpioPin.getDescription().toString(), true);
 		givenExceptionOnSetValue();
 
 		whenDriverIsActivated(Collections.emptyMap());
@@ -250,8 +259,8 @@ public class GPIODriverTest {
 	@Test
 	public void shouldFailReadWhenPinThrows() throws Exception {
 		givenBindGPIOService();
-		givenGPIOPin("AwesomePin", KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.NONE);
-		givenInputChannelRecord(this.gpioPin.getDescription().getName().get(), DataType.BOOLEAN, true);
+		givenGPIOPin("AwesomePin", 1, 1, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.NONE);
+		givenInputChannelRecord(this.gpioPin.getDescription().toString(), DataType.BOOLEAN, true);
 		givenExceptionOnGetValue();
 
 		whenDriverIsActivated(Collections.emptyMap());
@@ -268,18 +277,13 @@ public class GPIODriverTest {
 		this.driver.bindGPIOService(this.gpioService);
 	}
 
-	private void givenGPIOPin(String pinName) {
-		when(this.gpioService.getPinByName(pinName)).thenReturn(this.gpioPin);
-		when(this.gpioPin.getDescription().getName().get()).thenReturn(pinName);
-		when(gpioPin.isOpen()).thenReturn(true);
-	}
-
-	private void givenGPIOPin(String pinName, KuraGPIODirection resourceDirection, KuraGPIOMode resourceMode,
-			KuraGPIOTrigger resourceTrigger) {
-		when(this.gpioService.getPinByName(pinName, resourceDirection, resourceMode, resourceTrigger))
+	private void givenGPIOPin(String pinName, int controller, int line, KuraGPIODirection resourceDirection,
+			KuraGPIOMode resourceMode, KuraGPIOTrigger resourceTrigger) {
+		KuraGPIODescription description = new KuraGPIODescription(controller, line, pinName);
+		when(this.gpioService.getPin(controller, line, resourceDirection, resourceMode, resourceTrigger))
 				.thenReturn(this.gpioPin);
-		when(this.gpioService.getPinByName(pinName)).thenReturn(this.gpioPin);
-		when(this.gpioPin.getDescription().getName().get()).thenReturn(pinName);
+		when(this.gpioService.getPin(controller, line)).thenReturn(this.gpioPin);
+		when(this.gpioPin.getDescription()).thenReturn(description);
 		when(gpioPin.isOpen()).thenReturn(true);
 	}
 
@@ -399,12 +403,13 @@ public class GPIODriverTest {
 	}
 
 	private void thenNoInteractionsWithGPIOService() {
-		verify(this.gpioService, never()).getPinByName(any(String.class), any(KuraGPIODirection.class),
+		verify(this.gpioService, never()).getPin(any(Integer.class), any(Integer.class), any(KuraGPIODirection.class),
 				any(KuraGPIOMode.class), any(KuraGPIOTrigger.class));
 	}
 
-	private void thenGPIOServiceGetPinByNameIsCalled(int times, String pinName) {
-		verify(this.gpioService, org.mockito.Mockito.times(times)).getPinByName(pinName);
+	private void thenGPIOServiceGetPinsIsCalled(int times, int controller, int line, KuraGPIODirection direction,
+			KuraGPIOMode mode, KuraGPIOTrigger trigger) {
+		verify(this.gpioService, org.mockito.Mockito.times(times)).getPin(controller, line, direction, mode, trigger);
 	}
 
 	private void thenGpioPinIsClosed() throws IOException {

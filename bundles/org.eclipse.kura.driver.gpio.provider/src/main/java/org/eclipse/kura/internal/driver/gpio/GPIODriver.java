@@ -227,7 +227,7 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
             if (mode == null || GPIOChannelDescriptor.DEFAULT_RESOURCE_MODE.equals(mode.name())) {
                 pin = KuraGPIODirection.INPUT.equals(direction)
                         ? getPin(name, direction, KuraGPIOMode.INPUT_PULL_UP, trigger)
-                        : getPin(name, direction, KuraGPIOMode.OUTPUT_OPEN_DRAIN, trigger);
+                        : getPin(name, direction, KuraGPIOMode.OUTPUT_PUSH_PULL, trigger);
             } else {
                 pin = getPin(name, direction, mode, trigger);
             }
@@ -458,7 +458,7 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
                 if (KuraGPIODirection.INPUT.equals(request.resourceDirection)) {
                     request.resourceMode = KuraGPIOMode.INPUT_PULL_UP;
                 } else {
-                    request.resourceMode = KuraGPIOMode.OUTPUT_OPEN_DRAIN;
+                    request.resourceMode = KuraGPIOMode.OUTPUT_PUSH_PULL;
                 }
             } else {
                 request.resourceMode = GPIOChannelDescriptor.getResourceMode(channelConfig);

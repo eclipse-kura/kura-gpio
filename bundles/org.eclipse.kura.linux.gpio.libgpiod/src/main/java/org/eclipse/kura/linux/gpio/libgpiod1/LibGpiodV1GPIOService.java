@@ -14,7 +14,7 @@
 package org.eclipse.kura.linux.gpio.libgpiod1;
 
 import java.io.File;
-import java.util.Optional;
+import java.util.Map;
 
 import org.eclipse.kura.gpio.GPIOService;
 import org.eclipse.kura.gpio.KuraGPIODescription;
@@ -50,13 +50,19 @@ public class LibGpiodV1GPIOService extends LibGpiodGPIOService implements GPIOSe
             for (int offset = 0; offset < numLines; offset++) {
                 Pointer line = LibGpiodV1NativeWrapper.getInstance().gpiod_chip_get_line(chip, offset);
                 if (line != null) {
+                    Map<String, String> properties = new java.util.HashMap<>();
+                    properties.put(GPIO_LINE, Integer.toString(offset));
                     int chipNumber = LibGpiodPin.extractChipNumber(new File(chipPath).getName());
+                    properties.put(GPIO_CONTROLLER, Integer.toString(chipNumber));
                     String pinName = LibGpiodV1NativeWrapper.getInstance().gpiod_line_name(line);
                     if (pinName == null || pinName.trim().isEmpty() || pinName.equals("-")) {
-                        this.availablePinDescriptions.add(new KuraGPIODescription(chipNumber, offset));
+                        properties.put(GPIO_NAME, UNKNOWN_NAME);
                     } else {
-                        this.availablePinDescriptions.add(new KuraGPIODescription(chipNumber, offset, pinName));
+                        properties.put(GPIO_NAME, pinName);
                     }
+                    properties.put(KuraGPIODescription.DISPLAY_NAME_PROPERTY,
+                            properties.get(GPIO_NAME) + ":" + chipNumber + ":" + offset);
+                    this.availablePinDescriptions.add(new KuraGPIODescription(properties));
                 }
             }
 
@@ -88,15 +94,10 @@ public class LibGpiodV1GPIOService extends LibGpiodGPIOService implements GPIOSe
 
     protected KuraGPIOPin createPin(KuraGPIODescription description, KuraGPIODirection direction, KuraGPIOMode mode,
             KuraGPIOTrigger trigger) {
-        Optional<String> pinName = description.getName();
-        if (pinName.isPresent()) {
-            return new LibGpiodV1Pin(getDeviceFolderPath() + GPIO_CHIP_NAME + description.getController(),
-                    description.getLine(), direction, mode, trigger,
-                    pinName.get());
-        } else {
-            return new LibGpiodV1Pin(getDeviceFolderPath() + GPIO_CHIP_NAME + description.getController(),
-                    description.getLine(), direction, mode, trigger);
-        }
+        return new LibGpiodV1Pin(
+                getDeviceFolderPath() + GPIO_CHIP_NAME + description.getProperties().get(GPIO_CONTROLLER),
+                Integer.parseInt(description.getProperties().get(GPIO_LINE)),
+                description.getProperties().get(GPIO_NAME), direction, mode, trigger);
     }
 
 }

@@ -93,37 +93,20 @@ public class GPIOServiceImpl implements GPIOService {
     }
 
     @Override
-    public List<KuraGPIOPin> getPins(String name) {
+    public List<KuraGPIOPin> getPins(Map<String, String> description) {
         if (!this.gpioService.isPresent()) {
             throw new IllegalStateException("No libgpiod GPIOService implementation available");
         }
-        return this.gpioService.get().getPins(name);
+        return this.gpioService.get().getPins(description);
     }
 
     @Override
-    public List<KuraGPIOPin> getPins(String name, KuraGPIODirection direction, KuraGPIOMode mode,
+    public List<KuraGPIOPin> getPins(Map<String, String> description, KuraGPIODirection direction, KuraGPIOMode mode,
             KuraGPIOTrigger trigger) {
         if (!this.gpioService.isPresent()) {
             throw new IllegalStateException("No libgpiod GPIOService implementation available");
         }
-        return this.gpioService.get().getPins(name, direction, mode, trigger);
-    }
-
-    @Override
-    public KuraGPIOPin getPin(int controller, int line) {
-        if (!this.gpioService.isPresent()) {
-            throw new IllegalStateException("No libgpiod GPIOService implementation available");
-        }
-        return this.gpioService.get().getPin(controller, line);
-    }
-
-    @Override
-    public KuraGPIOPin getPin(int controller, int line, KuraGPIODirection direction, KuraGPIOMode mode,
-            KuraGPIOTrigger trigger) {
-        if (!this.gpioService.isPresent()) {
-            throw new IllegalStateException("No libgpiod GPIOService implementation available");
-        }
-        return this.gpioService.get().getPin(controller, line, direction, mode, trigger);
+        return this.gpioService.get().getPins(description, direction, mode, trigger);
     }
 
     @Override

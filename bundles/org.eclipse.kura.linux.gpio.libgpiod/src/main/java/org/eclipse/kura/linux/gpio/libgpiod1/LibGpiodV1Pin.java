@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2025 Eurotech and/or its affiliates and others
+ * Copyright (c) 2025, 2026 Eurotech and/or its affiliates and others
  *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
@@ -43,14 +43,9 @@ public class LibGpiodV1Pin extends LibGpiodPin implements KuraGPIOPin {
     private Pointer line;
     private final AtomicBoolean isReserved = new AtomicBoolean(false);
 
-    public LibGpiodV1Pin(String chipPath, int offset, KuraGPIODirection direction, KuraGPIOMode mode,
-            KuraGPIOTrigger trigger, String pinName) {
-        super(chipPath, offset, direction, mode, trigger, pinName);
-    }
-
-    public LibGpiodV1Pin(String chipPath, int offset, KuraGPIODirection direction, KuraGPIOMode mode,
+    public LibGpiodV1Pin(String chipPath, int offset, String pinName, KuraGPIODirection direction, KuraGPIOMode mode,
             KuraGPIOTrigger trigger) {
-        super(chipPath, offset, direction, mode, trigger);
+        super(chipPath, offset, pinName, direction, mode, trigger);
     }
 
     @Override

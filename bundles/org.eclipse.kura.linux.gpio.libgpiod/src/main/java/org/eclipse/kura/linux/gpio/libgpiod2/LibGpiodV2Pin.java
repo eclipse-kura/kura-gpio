@@ -42,14 +42,9 @@ public class LibGpiodV2Pin extends LibGpiodPin implements KuraGPIOPin {
     private Pointer requestConfig;
     private Pointer edgeEventBuffer;
 
-    public LibGpiodV2Pin(String chipPath, int offset, KuraGPIODirection direction, KuraGPIOMode mode,
-            KuraGPIOTrigger trigger, String pinName) {
-        super(chipPath, offset, direction, mode, trigger, pinName);
-    }
-
-    public LibGpiodV2Pin(String chipPath, int offset, KuraGPIODirection direction, KuraGPIOMode mode,
+    public LibGpiodV2Pin(String chipPath, int offset, String pinName, KuraGPIODirection direction, KuraGPIOMode mode,
             KuraGPIOTrigger trigger) {
-        super(chipPath, offset, direction, mode, trigger);
+        super(chipPath, offset, pinName, direction, mode, trigger);
     }
 
     @Override

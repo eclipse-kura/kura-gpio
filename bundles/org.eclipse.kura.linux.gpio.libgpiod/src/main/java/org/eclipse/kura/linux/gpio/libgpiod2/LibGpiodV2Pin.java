@@ -57,7 +57,7 @@ public class LibGpiodV2Pin extends LibGpiodPin implements KuraGPIOPin {
             try {
                 openGpioChip();
                 createLineSettings();
-                createlineConfig();
+                createLineConfig();
                 createRequestConfig();
                 requestLine();
                 createEventBuffer();
@@ -115,7 +115,7 @@ public class LibGpiodV2Pin extends LibGpiodPin implements KuraGPIOPin {
         }
     }
 
-    private void createlineConfig() throws KuraGPIODeviceException {
+    private void createLineConfig() throws KuraGPIODeviceException {
         try {
             // Create line config
             this.lineConfig = LibGpiodV2NativeWrapper.getInstance().gpiod_line_config_new();

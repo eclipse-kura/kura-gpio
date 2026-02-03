@@ -138,18 +138,15 @@ public class LibGpiodV1Pin extends LibGpiodPin implements KuraGPIOPin {
             switch (this.trigger) {
                 case RAISING_EDGE:
                     triggerResult = LibGpiodV1NativeWrapper.getInstance().gpiod_line_request_rising_edge_events(
-                            this.line,
-                            LIB_GPIOD_V1_PIN_EVENT_MONITOR);
+                            this.line, LIB_GPIOD_V1_PIN_EVENT_MONITOR);
                     break;
                 case FALLING_EDGE:
                     triggerResult = LibGpiodV1NativeWrapper.getInstance().gpiod_line_request_falling_edge_events(
-                            this.line,
-                            LIB_GPIOD_V1_PIN_EVENT_MONITOR);
+                            this.line, LIB_GPIOD_V1_PIN_EVENT_MONITOR);
                     break;
                 case BOTH_EDGES:
                     triggerResult = LibGpiodV1NativeWrapper.getInstance().gpiod_line_request_both_edges_events(
-                            this.line,
-                            LIB_GPIOD_V1_PIN_EVENT_MONITOR);
+                            this.line, LIB_GPIOD_V1_PIN_EVENT_MONITOR);
                     break;
                 default:
                     logger.error("Unsupported trigger mode for event monitoring: {}", this.trigger);

@@ -15,7 +15,6 @@ package org.eclipse.kura.internal.driver.gpio;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.eclipse.kura.configuration.metatype.Option;
 import org.eclipse.kura.core.configuration.metatype.Tad;
@@ -95,14 +94,7 @@ public final class GPIOChannelDescriptor implements ChannelDescriptor {
         List<String> availablePins = new ArrayList<>();
         for (GPIOService service : this.gpioServices) {
             List<KuraGPIODescription> pinDescriptions = service.getAvailablePinDescriptions();
-            pinDescriptions.forEach(description -> {
-                Optional<String> pinName = description.getName();
-                if (pinName.isPresent()) {
-                    availablePins.add(formatName(pinName.get(), description.getController(), description.getLine()));
-                } else {
-                    availablePins.add(formatName("UNKNOWN", description.getController(), description.getLine()));
-                }
-            });
+            pinDescriptions.forEach(description -> availablePins.add(description.getDisplayName()));
         }
 
         final Tad resourceName = new Tad();
@@ -172,9 +164,5 @@ public final class GPIOChannelDescriptor implements ChannelDescriptor {
 
     static KuraGPIOTrigger getResourceTrigger(Map<String, Object> properties) {
         return KuraGPIOTrigger.valueOf((String) properties.get(RESOURCE_TRIGGER));
-    }
-
-    private String formatName(String name, int controller, int line) {
-        return String.format("%s:%d:%d", name, controller, line);
     }
 }

@@ -146,17 +146,24 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
 
         for (KuraGPIODescription description : this.gpioDescriptions) {
             for (GPIOService service : this.gpioServices) {
-                KuraGPIOPin pin = service.getPin(description.getController(), description.getLine());
-                if (pin != null && pin.isOpen()) {
-                    try {
-                        pin.close();
-                    } catch (IOException e) {
-                        logger.error("Unable to close GPIO resource {}", pin.getDescription(), e);
-                    }
-                }
+                closeAllPins(description, service);
             }
         }
         this.gpioDescriptions.clear();
+    }
+
+    private void closeAllPins(KuraGPIODescription description, GPIOService service) {
+        List<KuraGPIOPin> pins = service.getPins(description.getProperties());
+        if (!pins.isEmpty()) {
+            KuraGPIOPin pin = pins.get(0);
+            if (pin != null && pin.isOpen()) {
+                try {
+                    pin.close();
+                } catch (IOException e) {
+                    logger.error("Unable to close GPIO resource {}", pin.getDescription(), e);
+                }
+            }
+        }
     }
 
     @Override
@@ -290,12 +297,15 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
 
     private KuraGPIOPin getPin(String resourceName, KuraGPIODirection resourceDirection, KuraGPIOMode resourceMode,
             KuraGPIOTrigger resourceTrigger) {
+        // The resource name is in the form name:controller:line, so it identifies only
+        // one specific gpio.
         KuraGPIOPin pin = null;
         for (GPIOService service : this.gpioServices) {
             KuraGPIODescription description = extractGPIODescription(resourceName);
-            pin = service.getPin(description.getController(), description.getLine(), resourceDirection, resourceMode,
+            List<KuraGPIOPin> pins = service.getPins(description.getProperties(), resourceDirection, resourceMode,
                     resourceTrigger);
-            if (pin != null) {
+            if (!pins.isEmpty()) {
+                pin = pins.get(0);
                 if (!pin.isOpen()) {
                     try {
                         pin.open();
@@ -402,21 +412,16 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
     }
 
     private KuraGPIODescription extractGPIODescription(String resourceName) {
-        String[] items = resourceName.split(":");
-        if (items.length == 3) {
-            try {
-                String name = items[0];
-                int controller = Integer.parseInt(items[1]);
-                int line = Integer.parseInt(items[2]);
-                return new KuraGPIODescription(controller, line, name);
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException(
-                        "Unable to extract GPIO description from resource name " + resourceName, e);
+        for (GPIOService service : this.gpioServices) {
+            List<KuraGPIODescription> pinDescriptions = service.getAvailablePinDescriptions();
+            Optional<KuraGPIODescription> optionalDescription = pinDescriptions.stream()
+                    .filter(description -> description.getDisplayName().equals(resourceName)).findFirst();
+            if (optionalDescription.isPresent()) {
+                return optionalDescription.get();
             }
-        } else {
-            throw new IllegalArgumentException(
-                    "Unable to extract GPIO description from resource name " + resourceName);
         }
+        throw new IllegalArgumentException(
+                "Unable to extract GPIO description from resource name " + resourceName);
     }
 
     private static class GPIORequestInfo {

@@ -19,6 +19,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -160,44 +161,44 @@ public class GPIOServiceImplTest extends CommonSteps {
     }
 
     @Test
-    public void testGetPinByGpiochipAndLineWithoutActivation() {
+    public void testGetPinsWithoutActivation() {
         givenGPIOServicePin(1, 2);
         givenGPIOServiceImpl();
 
-        whenGetPinByGpiochipAndLine(1, 2);
+        whenGetPins(1, 2);
 
         thenExceptionOccurred(IllegalStateException.class);
     }
 
     @Test
-    public void testGetPinByGpiochipAndLineWithActivation() {
+    public void testGetPinsWithActivation() {
         givenGPIOServicePin(1, 2);
         givenGPIOServiceImpl();
         givenActivatedGPIOService();
 
-        whenGetPinByGpiochipAndLine(1, 2);
+        whenGetPins(1, 2);
 
         thenPinIsNotNull();
     }
 
     @Test
-    public void testGetPinByGpiochipAndLineWithParametersWithoutActivation() {
+    public void testGetPinsWithParametersWithoutActivation() {
         givenGPIOServicePin(2, 2, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.BOTH_EDGES);
         givenGPIOServiceImpl();
 
-        whenGetPinByGpiochipAndLine(2, 2, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP,
+        whenGetPins(2, 2, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP,
                 KuraGPIOTrigger.BOTH_EDGES);
 
         thenExceptionOccurred(IllegalStateException.class);
     }
 
     @Test
-    public void testGetPinByGpiochipAndLineWithParametersWithActivation() {
+    public void testGetPinsWithParametersWithActivation() {
         givenGPIOServicePin(2, 2, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.BOTH_EDGES);
         givenGPIOServiceImpl();
         givenActivatedGPIOService();
 
-        whenGetPinByGpiochipAndLine(2, 2, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP,
+        whenGetPins(2, 2, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP,
                 KuraGPIOTrigger.BOTH_EDGES);
 
         thenPinIsNotNull();
@@ -258,13 +259,19 @@ public class GPIOServiceImplTest extends CommonSteps {
 
     private void givenGPIOServicePin(int pinGpiochip, int pinLine) {
         KuraGPIOPin pinMock = mock(KuraGPIOPin.class);
-        when(GPIOServiceMock.getPin(pinGpiochip, pinLine)).thenReturn(pinMock);
+        Map<String, String> properties = new HashMap<>();
+        properties.put("controller", Integer.toString(pinGpiochip));
+        properties.put("line", Integer.toString(pinLine));
+        when(GPIOServiceMock.getPins(properties)).thenReturn(Arrays.asList(pinMock));
     }
 
     private void givenGPIOServicePin(int pinGpiochip, int pinLine, KuraGPIODirection direction, KuraGPIOMode mode,
             KuraGPIOTrigger trigger) {
         KuraGPIOPin pinMock = mock(KuraGPIOPin.class);
-        when(GPIOServiceMock.getPin(pinGpiochip, pinLine, direction, mode, trigger)).thenReturn(pinMock);
+        Map<String, String> properties = new HashMap<>();
+        properties.put("controller", Integer.toString(pinGpiochip));
+        properties.put("line", Integer.toString(pinLine));
+        when(GPIOServiceMock.getPins(properties, direction, mode, trigger)).thenReturn(Arrays.asList(pinMock));
     }
 
     /*
@@ -321,18 +328,24 @@ public class GPIOServiceImplTest extends CommonSteps {
         }
     }
 
-    private void whenGetPinByGpiochipAndLine(int gpiochip, int line) {
+    private void whenGetPins(int gpiochip, int line) {
         try {
-            this.resultPin = this.gpioServiceImpl.getPin(gpiochip, line);
+            Map<String, String> properties = new HashMap<>();
+            properties.put("controller", Integer.toString(gpiochip));
+            properties.put("line", Integer.toString(line));
+            this.resultPin = this.gpioServiceImpl.getPins(properties).get(0);
         } catch (Exception e) {
             this.occurredException = e;
         }
     }
 
-    private void whenGetPinByGpiochipAndLine(int gpiochip, int line, KuraGPIODirection direction, KuraGPIOMode mode,
+    private void whenGetPins(int gpiochip, int line, KuraGPIODirection direction, KuraGPIOMode mode,
             KuraGPIOTrigger trigger) {
         try {
-            this.resultPin = this.gpioServiceImpl.getPin(gpiochip, line, direction, mode, trigger);
+            Map<String, String> properties = new HashMap<>();
+            properties.put("controller", Integer.toString(gpiochip));
+            properties.put("line", Integer.toString(line));
+            this.resultPin = this.gpioServiceImpl.getPins(properties, direction, mode, trigger).get(0);
         } catch (Exception e) {
             this.occurredException = e;
         }

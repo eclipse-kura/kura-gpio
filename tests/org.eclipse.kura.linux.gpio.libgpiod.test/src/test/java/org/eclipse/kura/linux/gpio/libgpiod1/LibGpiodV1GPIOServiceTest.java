@@ -426,9 +426,9 @@ public class LibGpiodV1GPIOServiceTest extends CommonSteps {
 
             @Override
             public void initialize() {
-                this.availablePinDescriptions.add(new KuraGPIODescription(0, 1, "GPIO0_1"));
-                this.availablePinDescriptions.add(new KuraGPIODescription(2, 3, "GPIO2_3"));
-                this.availablePinDescriptions.add(new KuraGPIODescription(5, 23, "GPIO5_23"));
+                this.availablePinDescriptions.add(createKuraGPIODescription(0, 1, "GPIO0_1"));
+                this.availablePinDescriptions.add(createKuraGPIODescription(2, 3, "GPIO2_3"));
+                this.availablePinDescriptions.add(createKuraGPIODescription(5, 23, "GPIO5_23"));
                 this.initialized.set(true);
             }
 
@@ -437,6 +437,16 @@ public class LibGpiodV1GPIOServiceTest extends CommonSteps {
                 return DEVICE_FOLDER;
             }
         };
+    }
+
+    private KuraGPIODescription createKuraGPIODescription(int controller, int line, String name) {
+        Map<String, String> properties = new java.util.HashMap<>();
+        properties.put("controller", Integer.toString(controller));
+        properties.put("line", Integer.toString(line));
+        properties.put("name", name);
+        properties.put(KuraGPIODescription.DISPLAY_NAME_PROPERTY,
+                name + ":" + controller + ":" + line);
+        return new KuraGPIODescription(properties);
     }
 
     private void givenV1GPIOServiceNotInitialized(String deviceFolderPath) {
@@ -457,15 +467,6 @@ public class LibGpiodV1GPIOServiceTest extends CommonSteps {
             } catch (FileAlreadyExistsException e) {
                 // Ignore if file already exists
             }
-        }
-    }
-
-    private void givenTmpGpioChips(int gpioChipNumber) throws IOException {
-        try {
-            Path newFilePath = Paths.get(DEVICE_FOLDER + "gpiochip" + gpioChipNumber);
-            Files.createFile(newFilePath);
-        } catch (FileAlreadyExistsException e) {
-            // Ignore if file already exists
         }
     }
 
@@ -525,7 +526,10 @@ public class LibGpiodV1GPIOServiceTest extends CommonSteps {
 
     private void whenV1ServiceGetPin(int gpiochip, int line) {
         try {
-            this.resultPin = this.v1Service.getPin(gpiochip, line);
+            Map<String, String> properties = new java.util.HashMap<>();
+            properties.put("controller", Integer.toString(gpiochip));
+            properties.put("line", Integer.toString(line));
+            this.resultPin = this.v1Service.getPins(properties).get(0);
         } catch (Exception e) {
             this.occurredException = e;
         }
@@ -533,17 +537,22 @@ public class LibGpiodV1GPIOServiceTest extends CommonSteps {
 
     private void whenV1ServiceGetPinAgain(int gpiochip, int line) {
         try {
-            this.resultPinAgain = this.v1Service.getPin(gpiochip, line);
+            Map<String, String> properties = new java.util.HashMap<>();
+            properties.put("controller", Integer.toString(gpiochip));
+            properties.put("line", Integer.toString(line));
+            this.resultPinAgain = this.v1Service.getPins(properties).get(0);
         } catch (Exception e) {
             this.occurredException = e;
         }
     }
 
     private void whenV1ServiceGetPin(int gpiochip, int line, KuraGPIODirection direction,
-            KuraGPIOMode mode,
-            KuraGPIOTrigger trigger) {
+            KuraGPIOMode mode, KuraGPIOTrigger trigger) {
         try {
-            this.resultPin = this.v1Service.getPin(gpiochip, line, direction, mode, trigger);
+            Map<String, String> properties = new java.util.HashMap<>();
+            properties.put("controller", Integer.toString(gpiochip));
+            properties.put("line", Integer.toString(line));
+            this.resultPin = this.v1Service.getPins(properties, direction, mode, trigger).get(0);
         } catch (Exception e) {
             this.occurredException = e;
         }

@@ -100,7 +100,12 @@ public class GPIOChannelDescriptorTest {
     private void getAvailablePinDescriptions(String... pins) {
         List<KuraGPIODescription> descriptions = new ArrayList<>();
         for (int i = 0; i < pins.length; i++) {
-            descriptions.add(new KuraGPIODescription(i, i, pins[i]));
+            Map<String, String> properties = new java.util.HashMap<>();
+            properties.put("controller", Integer.toString(i));
+            properties.put("line", Integer.toString(i));
+            properties.put("name", pins[i]);
+            properties.put(KuraGPIODescription.DISPLAY_NAME_PROPERTY, pins[i] + ":" + i + ":" + i);
+            descriptions.add(new KuraGPIODescription(properties));
         }
         when(gpioService.getAvailablePinDescriptions()).thenReturn(descriptions);
     }

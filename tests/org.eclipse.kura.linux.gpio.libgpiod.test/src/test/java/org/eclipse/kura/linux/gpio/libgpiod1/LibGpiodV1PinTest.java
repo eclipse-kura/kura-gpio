@@ -420,15 +420,15 @@ public class LibGpiodV1PinTest extends CommonSteps {
     private void givenV1Pin(String pinName, int terminal) {
         String chipPath = "/dev/gpiochip" + terminal / 1000;
         Integer offset = terminal % 1000;
-        this.v1Pin = new LibGpiodV1Pin(chipPath, offset, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP,
-                KuraGPIOTrigger.NONE, pinName);
+        this.v1Pin = new LibGpiodV1Pin(chipPath, offset, pinName, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP,
+                KuraGPIOTrigger.NONE);
     }
 
     private void givenV1Pin(String pinName, int terminal, KuraGPIODirection direction, KuraGPIOMode mode,
             KuraGPIOTrigger trigger) {
         String chipPath = "/dev/gpiochip" + terminal / 1000;
         Integer offset = terminal % 1000;
-        this.v1Pin = new LibGpiodV1Pin(chipPath, offset, direction, mode, trigger, pinName);
+        this.v1Pin = new LibGpiodV1Pin(chipPath, offset, pinName, direction, mode, trigger);
     }
 
     private void givenPinStatusListener() {

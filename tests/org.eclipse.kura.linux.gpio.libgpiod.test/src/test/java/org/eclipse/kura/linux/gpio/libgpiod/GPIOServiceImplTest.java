@@ -45,7 +45,7 @@ public class GPIOServiceImplTest extends CommonSteps {
     public void setup() {
         this.libGpiodGPIOServiceFactoryMock = mockStatic(LibGpiodGPIOServiceFactory.class);
         this.GPIOServiceMock = mock(GPIOService.class);
-        this.libGpiodGPIOServiceFactoryMock.when(() -> LibGpiodGPIOServiceFactory.getInstance())
+        this.libGpiodGPIOServiceFactoryMock.when(LibGpiodGPIOServiceFactory::getInstance)
                 .thenReturn(java.util.Optional.of(this.GPIOServiceMock));
         Map<Integer, String> availablePins = new HashMap<>();
         availablePins.put(1001, "GPIO_01");
@@ -257,19 +257,19 @@ public class GPIOServiceImplTest extends CommonSteps {
         when(GPIOServiceMock.getPinByTerminal(pinTerminal, direction, mode, trigger)).thenReturn(pinMock);
     }
 
-    private void givenGPIOServicePin(int pinGpiochip, int pinLine) {
+    private void givenGPIOServicePin(int pinController, int pinLine) {
         KuraGPIOPin pinMock = mock(KuraGPIOPin.class);
         Map<String, String> properties = new HashMap<>();
-        properties.put("controller", Integer.toString(pinGpiochip));
+        properties.put("controller", Integer.toString(pinController));
         properties.put("line", Integer.toString(pinLine));
         when(GPIOServiceMock.getPins(properties)).thenReturn(Arrays.asList(pinMock));
     }
 
-    private void givenGPIOServicePin(int pinGpiochip, int pinLine, KuraGPIODirection direction, KuraGPIOMode mode,
+    private void givenGPIOServicePin(int pinController, int pinLine, KuraGPIODirection direction, KuraGPIOMode mode,
             KuraGPIOTrigger trigger) {
         KuraGPIOPin pinMock = mock(KuraGPIOPin.class);
         Map<String, String> properties = new HashMap<>();
-        properties.put("controller", Integer.toString(pinGpiochip));
+        properties.put("controller", Integer.toString(pinController));
         properties.put("line", Integer.toString(pinLine));
         when(GPIOServiceMock.getPins(properties, direction, mode, trigger)).thenReturn(Arrays.asList(pinMock));
     }
@@ -328,10 +328,10 @@ public class GPIOServiceImplTest extends CommonSteps {
         }
     }
 
-    private void whenGetPins(int gpiochip, int line) {
+    private void whenGetPins(int controller, int line) {
         try {
             Map<String, String> properties = new HashMap<>();
-            properties.put("controller", Integer.toString(gpiochip));
+            properties.put("controller", Integer.toString(controller));
             properties.put("line", Integer.toString(line));
             this.resultPin = this.gpioServiceImpl.getPins(properties).get(0);
         } catch (Exception e) {
@@ -339,11 +339,11 @@ public class GPIOServiceImplTest extends CommonSteps {
         }
     }
 
-    private void whenGetPins(int gpiochip, int line, KuraGPIODirection direction, KuraGPIOMode mode,
+    private void whenGetPins(int controller, int line, KuraGPIODirection direction, KuraGPIOMode mode,
             KuraGPIOTrigger trigger) {
         try {
             Map<String, String> properties = new HashMap<>();
-            properties.put("controller", Integer.toString(gpiochip));
+            properties.put("controller", Integer.toString(controller));
             properties.put("line", Integer.toString(line));
             this.resultPin = this.gpioServiceImpl.getPins(properties, direction, mode, trigger).get(0);
         } catch (Exception e) {

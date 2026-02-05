@@ -126,6 +126,7 @@ public class LibGpiodV1Pin extends LibGpiodPin implements KuraGPIOPin {
         }
     }
 
+    @Override
     protected void monitorEvents() {
         if (!this.isMonitoring.get() || !this.isOpen.get()) {
             return;

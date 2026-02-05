@@ -21,9 +21,9 @@ Eclipse Kura-GPIO™ provides an Eclipse Kura™ addon for managing GPIOs.
 ### Documentation
 Eclipse Kura-GPIO™ Documentation can be found at:
 
-- [Kura GPIO APIs] (https://eclipse-kura.github.io/kura/latest/java-application-development/how-to-use-gpio/)
-- [Kura GPIO Driver] (https://eclipse-kura.github.io/kura/latest/connect-field-devices/gpio-driver/)
-- [Kura GPIO Driver Usage] (https://eclipse-kura.github.io/kura/latest/kura-wires/usage-examples/gpio-driver-application/)
+- [Kura GPIO APIs](https://eclipse-kura.github.io/kura/latest/java-application-development/how-to-use-gpio/)
+- [Kura GPIO Driver](https://eclipse-kura.github.io/kura/latest/connect-field-devices/gpio-driver/)
+- [Kura GPIO Driver Usage](https://eclipse-kura.github.io/kura/latest/kura-wires/usage-examples/gpio-driver-application/)
 
 
 Build

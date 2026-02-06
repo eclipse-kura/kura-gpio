@@ -159,10 +159,16 @@ public abstract class LibGpiodGPIOService {
         initialize();
 
         Optional<String> name = Optional.ofNullable(description.get(GPIO_NAME)).filter(s -> !s.isEmpty());
-        Optional<Integer> controller = Optional.ofNullable(description.get(GPIO_CONTROLLER)).filter(s -> !s.isEmpty())
-                .map(Integer::parseInt);
-        Optional<Integer> line = Optional.ofNullable(description.get(GPIO_LINE)).filter(s -> !s.isEmpty())
-                .map(Integer::parseInt);
+        Optional<Integer> controller;
+        Optional<Integer> line;
+        try {
+            controller = Optional.ofNullable(description.get(GPIO_CONTROLLER))
+                    .filter(s -> !s.isEmpty()).map(Integer::parseInt);
+            line = Optional.ofNullable(description.get(GPIO_LINE)).filter(s -> !s.isEmpty())
+                    .map(Integer::parseInt);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid integer value in pin description", e);
+        }
 
         if (!name.isPresent() && !controller.isPresent() && !line.isPresent()) {
             throw new IllegalArgumentException("Pin description cannot be null or empty");
@@ -207,17 +213,22 @@ public abstract class LibGpiodGPIOService {
         if (value == null || value.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(Integer.parseInt(value));
+        int parsedValue;
+        try {
+            parsedValue = Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid integer value for property " + key + ": " + value, e);
+        }
+        return Optional.of(parsedValue);
     }
 
     public Map<Integer, String> getAvailablePins() {
         initialize();
         Map<Integer, String> pins = new HashMap<>();
-        this.availablePinDescriptions
-                .forEach(description -> pins.put(
-                        Integer.parseInt(description.getProperties().get(GPIO_CONTROLLER)) * 1000
-                                + Integer.parseInt(description.getProperties().get(GPIO_LINE)),
-                        description.getProperties().get(GPIO_NAME)));
+        this.availablePinDescriptions.forEach(description -> pins.put(
+                parseIntProperty(description.getProperties(), GPIO_CONTROLLER).orElse(0) * 1000
+                        + Integer.parseInt(description.getProperties().get(GPIO_LINE)),
+                description.getProperties().get(GPIO_NAME)));
         return pins;
     }
 

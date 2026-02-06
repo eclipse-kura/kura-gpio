@@ -390,7 +390,7 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
                 KuraGPIOPin pin = getPin(requestInfo.resourceName, requestInfo.resourceDirection,
                         requestInfo.resourceMode, requestInfo.resourceTrigger);
                 if (pin != null) {
-                    Boolean value = pin.getValue();
+                    boolean value = pin.getValue();
                     final Optional<TypedValue<?>> typedValue = getTypedValue(requestInfo.dataType, value);
                     if (!typedValue.isPresent()) {
                         channelRecord.setChannelStatus(new ChannelStatus(FAILURE,

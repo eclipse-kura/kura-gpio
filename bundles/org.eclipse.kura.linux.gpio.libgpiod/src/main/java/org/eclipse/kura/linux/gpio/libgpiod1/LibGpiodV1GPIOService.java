@@ -36,6 +36,7 @@ import com.sun.jna.Pointer;
  */
 public class LibGpiodV1GPIOService extends LibGpiodGPIOService implements GPIOService {
 
+    @Override
     protected void discoverChipPins(String chipPath) {
         Pointer chip = null;
 
@@ -73,6 +74,7 @@ public class LibGpiodV1GPIOService extends LibGpiodGPIOService implements GPIOSe
         }
     }
 
+    @Override
     protected boolean isValidPin(String chipPath, int offset) {
         Pointer chip = null;
 
@@ -92,12 +94,19 @@ public class LibGpiodV1GPIOService extends LibGpiodGPIOService implements GPIOSe
         }
     }
 
+    @Override
     protected KuraGPIOPin createPin(KuraGPIODescription description, KuraGPIODirection direction, KuraGPIOMode mode,
             KuraGPIOTrigger trigger) {
+        String gpioLineValue = description.getProperties().get(GPIO_LINE);
+        int gpioLine = -1;
+        try {
+            gpioLine = Integer.parseInt(gpioLineValue);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid GPIO line value: " + gpioLineValue, e);
+        }
         return new LibGpiodV1Pin(
                 getDeviceFolderPath() + GPIO_CHIP_NAME + description.getProperties().get(GPIO_CONTROLLER),
-                Integer.parseInt(description.getProperties().get(GPIO_LINE)),
-                description.getProperties().get(GPIO_NAME), direction, mode, trigger);
+                gpioLine, description.getProperties().get(GPIO_NAME), direction, mode, trigger);
     }
 
 }

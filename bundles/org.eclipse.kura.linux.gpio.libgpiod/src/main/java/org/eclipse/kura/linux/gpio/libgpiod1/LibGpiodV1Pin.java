@@ -260,7 +260,7 @@ public class LibGpiodV1Pin extends LibGpiodPin implements KuraGPIOPin {
                 config.request_type = calculateRequestType();
                 config.flags = calculateFlags();
                 result = LibGpiodV1NativeWrapper.getInstance().gpiod_line_request(this.line,
-                        config, LibGpiodV1Native.GPIOD_LINE_ACTIVE_STATE_LOW);
+                        config, 0);
 
                 if (result < 0) {
                     throw new KuraGPIODeviceException("Failed to reserve GPIO line");
@@ -298,7 +298,7 @@ public class LibGpiodV1Pin extends LibGpiodPin implements KuraGPIOPin {
     private int calculateRequestType() {
         switch (this.direction) {
             case INPUT:
-                // If direction is INPUT, set the request type to both edges by default, 
+                // If direction is INPUT, set the request type to both edges by default,
                 // as it will be further filtered in the event handler
                 return LibGpiodV1Native.GPIOD_LINE_REQUEST_EVENT_BOTH_EDGES;
             case OUTPUT:

@@ -18,6 +18,7 @@ import java.util.List;
 
 import com.sun.jna.Callback;
 import com.sun.jna.Library;
+import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
@@ -106,14 +107,31 @@ public interface LibGpiodV1Native extends Library {
      */
     class LineRequestConfig extends Structure {
 
-        public String consumer;
+        public Pointer consumer;
         public int request_type;
         public int flags;
+
+        private Memory consumerMemory;
 
         @Override
         protected List<String> getFieldOrder() {
             return Arrays.asList("consumer", "request_type", "flags");
         }
+
+        public void setConsumer(String value) {
+            if (value == null) {
+                consumerMemory = null;
+                consumer = null;
+                return;
+            }
+
+            // allocate native memory (+1 for null terminator)
+            consumerMemory = new Memory(Native.toByteArray(value, "UTF-8").length + 1L);
+            consumerMemory.setString(0, value);
+
+            consumer = consumerMemory;
+        }
+
     }
 
     /**
@@ -531,7 +549,8 @@ public interface LibGpiodV1Native extends Library {
     boolean gpiod_line_is_requested(Pointer line);
 
     /**
-     * Check if the calling user has neither requested ownership nor configured events
+     * Check if the calling user has neither requested ownership nor configured
+     * events
      */
     boolean gpiod_line_is_free(Pointer line);
 

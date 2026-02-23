@@ -19,9 +19,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 import java.io.IOException;
 
@@ -55,19 +57,19 @@ public class LibGpiodV1PinTest extends CommonSteps {
 
     @Before
     public void setup() {
-        this.nativeMock = mockStatic(Native.class);
+        this.nativeMock = mockStatic(Native.class, withSettings().defaultAnswer(CALLS_REAL_METHODS));
         this.nativeInterfaceMock = mock(LibGpiodV1Native.class);
         this.nativeMock.when(() -> Native.load("gpiod", LibGpiodV1Native.class)).thenReturn(this.nativeInterfaceMock);
         this.nativeInterfaceWrapperMock = mockStatic(LibGpiodV1NativeWrapper.class);
         this.nativeInterfaceWrapperMock.when(LibGpiodV1NativeWrapper::getInstance).thenReturn(this.nativeInterfaceMock);
 
         LineRequestConfig configLineInput = new LineRequestConfig();
-        configLineInput.consumer = CONSUMER_NAME;
+        configLineInput.setConsumer(CONSUMER_NAME);
         configLineInput.request_type = LibGpiodV1Native.GPIOD_LINE_REQUEST_EVENT_BOTH_EDGES;
         configLineInput.flags = LibGpiodV1Native.GPIOD_LINE_REQUEST_FLAG_BIAS_PULL_UP;
 
         LineRequestConfig configLineOutput = new LineRequestConfig();
-        configLineOutput.consumer = CONSUMER_NAME;
+        configLineOutput.setConsumer(CONSUMER_NAME);
         configLineOutput.request_type = LibGpiodV1Native.GPIOD_LINE_REQUEST_DIRECTION_OUTPUT;
         configLineOutput.flags = LibGpiodV1Native.GPIOD_LINE_REQUEST_FLAG_OPEN_SOURCE;
 

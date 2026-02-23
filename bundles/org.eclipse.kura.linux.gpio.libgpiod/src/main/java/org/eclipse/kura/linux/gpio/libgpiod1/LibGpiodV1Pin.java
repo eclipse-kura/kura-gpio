@@ -256,7 +256,7 @@ public class LibGpiodV1Pin extends LibGpiodPin implements KuraGPIOPin {
                 int result;
 
                 LineRequestConfig config = new LineRequestConfig();
-                config.consumer = "KuraGPIOPin";
+                config.setConsumer("KuraGPIOPin");
                 config.request_type = calculateRequestType();
                 config.flags = calculateFlags();
                 result = LibGpiodV1NativeWrapper.getInstance().gpiod_line_request(this.line,

@@ -55,6 +55,12 @@ public class LibGpiodV1PinTest extends CommonSteps {
 
     @Before
     public void setup() {
+        this.nativeMock = mockStatic(Native.class);
+        this.nativeInterfaceMock = mock(LibGpiodV1Native.class);
+        this.nativeMock.when(() -> Native.load("gpiod", LibGpiodV1Native.class)).thenReturn(this.nativeInterfaceMock);
+        this.nativeInterfaceWrapperMock = mockStatic(LibGpiodV1NativeWrapper.class);
+        this.nativeInterfaceWrapperMock.when(LibGpiodV1NativeWrapper::getInstance).thenReturn(this.nativeInterfaceMock);
+
         LineRequestConfig configLineInput = new LineRequestConfig();
         configLineInput.consumer = CONSUMER_NAME;
         configLineInput.request_type = LibGpiodV1Native.GPIOD_LINE_REQUEST_EVENT_BOTH_EDGES;
@@ -64,12 +70,6 @@ public class LibGpiodV1PinTest extends CommonSteps {
         configLineOutput.consumer = CONSUMER_NAME;
         configLineOutput.request_type = LibGpiodV1Native.GPIOD_LINE_REQUEST_DIRECTION_OUTPUT;
         configLineOutput.flags = LibGpiodV1Native.GPIOD_LINE_REQUEST_FLAG_OPEN_SOURCE;
-
-        this.nativeMock = mockStatic(Native.class);
-        this.nativeInterfaceMock = mock(LibGpiodV1Native.class);
-        this.nativeMock.when(() -> Native.load("gpiod", LibGpiodV1Native.class)).thenReturn(this.nativeInterfaceMock);
-        this.nativeInterfaceWrapperMock = mockStatic(LibGpiodV1NativeWrapper.class);
-        this.nativeInterfaceWrapperMock.when(LibGpiodV1NativeWrapper::getInstance).thenReturn(this.nativeInterfaceMock);
 
         Pointer chip0 = Pointer.createConstant(1);
         when(this.nativeInterfaceMock.gpiod_chip_open("/dev/gpiochip0")).thenReturn(chip0);

@@ -19,11 +19,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 import java.io.IOException;
 
@@ -57,7 +55,7 @@ public class LibGpiodV1PinTest extends CommonSteps {
 
     @Before
     public void setup() {
-        this.nativeMock = mockStatic(Native.class, withSettings().defaultAnswer(CALLS_REAL_METHODS));
+        this.nativeMock = mockStatic(Native.class);
         this.nativeInterfaceMock = mock(LibGpiodV1Native.class);
         this.nativeMock.when(() -> Native.load("gpiod", LibGpiodV1Native.class)).thenReturn(this.nativeInterfaceMock);
         this.nativeInterfaceWrapperMock = mockStatic(LibGpiodV1NativeWrapper.class);
@@ -71,7 +69,7 @@ public class LibGpiodV1PinTest extends CommonSteps {
         LineRequestConfig configLineOutput = new LineRequestConfig();
         configLineOutput.setConsumer(CONSUMER_NAME);
         configLineOutput.request_type = LibGpiodV1Native.GPIOD_LINE_REQUEST_DIRECTION_OUTPUT;
-        configLineOutput.flags = LibGpiodV1Native.GPIOD_LINE_REQUEST_FLAG_OPEN_SOURCE;
+        configLineOutput.flags = 0;
 
         Pointer chip0 = Pointer.createConstant(1);
         when(this.nativeInterfaceMock.gpiod_chip_open("/dev/gpiochip0")).thenReturn(chip0);
@@ -84,7 +82,7 @@ public class LibGpiodV1PinTest extends CommonSteps {
         when(this.nativeInterfaceMock.gpiod_line_is_used(line4)).thenReturn(false);
         when(this.nativeInterfaceMock.gpiod_line_request(eq(line4),
                 argThat(new LineRequestConfigMatcher(configLineInput)),
-                eq(LibGpiodV1Native.GPIOD_LINE_ACTIVE_STATE_LOW))).thenReturn(0);
+                eq(0))).thenReturn(0);
         when(this.nativeInterfaceMock.gpiod_line_get_value(line4)).thenReturn(1);
         when(this.nativeInterfaceMock.gpiod_line_request_both_edges_events(line4,
                 CONSUMER_NAME)).thenReturn(1);
@@ -93,14 +91,14 @@ public class LibGpiodV1PinTest extends CommonSteps {
         when(this.nativeInterfaceMock.gpiod_line_is_used(line8)).thenReturn(false);
         when(this.nativeInterfaceMock.gpiod_line_request(eq(line8),
                 argThat(new LineRequestConfigMatcher(configLineInput)),
-                eq(LibGpiodV1Native.GPIOD_LINE_ACTIVE_STATE_LOW))).thenReturn(0);
+                eq(0))).thenReturn(0);
         when(this.nativeInterfaceMock.gpiod_line_get_value(line8)).thenReturn(-1);
         Pointer line9 = Pointer.createConstant(9);
         when(this.nativeInterfaceMock.gpiod_chip_get_line(chip2, 9)).thenReturn(line9);
         when(this.nativeInterfaceMock.gpiod_line_is_used(line9)).thenReturn(false);
         when(this.nativeInterfaceMock.gpiod_line_request(eq(line9),
                 argThat(new LineRequestConfigMatcher(configLineInput)),
-                eq(LibGpiodV1Native.GPIOD_LINE_ACTIVE_STATE_LOW))).thenReturn(0);
+                eq(0))).thenReturn(0);
         when(this.nativeInterfaceMock.gpiod_line_get_value(line9)).thenThrow(new Error());
         Pointer chip5 = Pointer.createConstant(5);
         when(this.nativeInterfaceMock.gpiod_chip_open("/dev/gpiochip5")).thenReturn(chip5);
@@ -109,31 +107,30 @@ public class LibGpiodV1PinTest extends CommonSteps {
         when(this.nativeInterfaceMock.gpiod_chip_get_line(chip5, 6)).thenReturn(line6);
         when(this.nativeInterfaceMock.gpiod_line_request(eq(line6),
                 argThat(new LineRequestConfigMatcher(configLineInput)),
-                eq(LibGpiodV1Native.GPIOD_LINE_ACTIVE_STATE_LOW))).thenReturn(0);
+                eq(0))).thenReturn(0);
         Pointer line7 = Pointer.createConstant(7);
         when(this.nativeInterfaceMock.gpiod_chip_get_line(chip5, 7)).thenReturn(line7);
         when(this.nativeInterfaceMock.gpiod_line_request(eq(line7),
                 argThat(new LineRequestConfigMatcher(configLineOutput)),
-                eq(LibGpiodV1Native.GPIOD_LINE_ACTIVE_STATE_LOW))).thenReturn(0);
+                eq(0))).thenReturn(0);
         Pointer line10 = Pointer.createConstant(10);
         when(this.nativeInterfaceMock.gpiod_chip_get_line(chip5, 10)).thenReturn(line10);
         when(this.nativeInterfaceMock.gpiod_line_is_used(line10)).thenReturn(false);
         when(this.nativeInterfaceMock.gpiod_line_request(eq(line10),
                 argThat(new LineRequestConfigMatcher(configLineOutput)),
-                eq(LibGpiodV1Native.GPIOD_LINE_ACTIVE_STATE_LOW))).thenReturn(0);
+                eq(0))).thenReturn(0);
         when(this.nativeInterfaceMock.gpiod_line_set_value(line10, 1)).thenReturn(-1);
         Pointer line11 = Pointer.createConstant(11);
         when(this.nativeInterfaceMock.gpiod_chip_get_line(chip5, 11)).thenReturn(line11);
         when(this.nativeInterfaceMock.gpiod_line_is_used(line11)).thenReturn(false);
         when(this.nativeInterfaceMock.gpiod_line_request(eq(line11),
                 argThat(new LineRequestConfigMatcher(configLineOutput)),
-                eq(LibGpiodV1Native.GPIOD_LINE_ACTIVE_STATE_LOW))).thenReturn(0);
+                eq(0))).thenReturn(0);
         when(this.nativeInterfaceMock.gpiod_line_set_value(line11, 1)).thenThrow(new Error());
     }
 
     @After
     public void cleanup() {
-        this.nativeMock.close();
         this.nativeInterfaceWrapperMock.close();
     }
 
@@ -547,9 +544,27 @@ public class LibGpiodV1PinTest extends CommonSteps {
             this.left = config;
         }
 
+        private boolean consumersEqual(Pointer a, Pointer b) {
+            if (a == b) {
+                return true;
+            }
+            if (a == null || b == null) {
+                return false;
+            }
+            String sa = a.getString(0);
+            String sb = b.getString(0);
+            if (sa == sb) {
+                return true;
+            }
+            if (sa == null || sb == null) {
+                return false;
+            }
+            return sa.equals(sb);
+        }
+
         @Override
         public boolean matches(LineRequestConfig argument) {
-            return left.consumer.equals(argument.consumer) &&
+            return consumersEqual(left.consumer, argument.consumer) &&
                     left.flags == argument.flags &&
                     left.request_type == argument.request_type;
         }

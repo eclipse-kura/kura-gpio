@@ -131,7 +131,6 @@ public interface LibGpiodV1Native extends Library {
 
             consumer = consumerMemory;
         }
-
     }
 
     public default LineRequestConfig createLineRequestConfig(String consumer, int request_type, int flags) {
@@ -182,6 +181,12 @@ public interface LibGpiodV1Native extends Library {
         protected List<String> getFieldOrder() {
             return Arrays.asList("tv_sec", "tv_nsec");
         }
+    }
+
+    public default TimeSpec createTimeSpec(long sec) {
+        TimeSpec ts = new TimeSpec();
+        ts.tv_sec = sec;
+        return ts;
     }
 
     /**

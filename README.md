@@ -42,7 +42,7 @@ In order to be able to build Eclipse Kura™ GPIO on your development machine, y
 
 </summary>
 
-To install Java 21, download the JDK tar archive from the [Adoptium Project Repository](https://adoptium.net/en-GB/temurin/releases/?variant=openjdk8&jvmVariant=hotspot&version=17).
+To install Java 21, download the JDK tar archive from the [Adoptium Project Repository](https://adoptium.net/en-GB/temurin/releases/?variant=openjdk8&jvmVariant=hotspot&version=21).
 
 Once downloaded, copy the tar archive in `/Library/Java/JavaVirtualMachines/` and cd into it. Unpack the archive with the following command:
 

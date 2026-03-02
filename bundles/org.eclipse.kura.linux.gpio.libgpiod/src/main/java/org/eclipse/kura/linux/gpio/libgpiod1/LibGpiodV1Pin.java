@@ -255,12 +255,9 @@ public class LibGpiodV1Pin extends LibGpiodPin implements KuraGPIOPin {
             try {
                 int result;
 
-                LineRequestConfig config = new LineRequestConfig();
-                config.setConsumer("KuraGPIOPin");
-                config.request_type = calculateRequestType();
-                config.flags = calculateFlags();
-                result = LibGpiodV1NativeWrapper.getInstance().gpiod_line_request(this.line,
-                        config, 0);
+                LineRequestConfig config = LibGpiodV1NativeWrapper.getInstance().createLineRequestConfig("KuraGPIOPin",
+                        calculateRequestType(), calculateFlags());
+                result = LibGpiodV1NativeWrapper.getInstance().gpiod_line_request(this.line, config, 0);
 
                 if (result < 0) {
                     throw new KuraGPIODeviceException("Failed to reserve GPIO line");

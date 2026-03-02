@@ -134,6 +134,14 @@ public interface LibGpiodV1Native extends Library {
 
     }
 
+    public default LineRequestConfig createLineRequestConfig(String consumer, int request_type, int flags) {
+        LineRequestConfig config = new LineRequestConfig();
+        config.setConsumer(consumer);
+        config.request_type = request_type;
+        config.flags = flags;
+        return config;
+    }
+
     /**
      * Helper structure for storing a set of GPIO line objects
      */

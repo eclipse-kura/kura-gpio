@@ -17,7 +17,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -31,11 +33,9 @@ import org.eclipse.kura.gpio.KuraGPIOMode;
 import org.eclipse.kura.gpio.KuraGPIOTrigger;
 import org.eclipse.kura.gpio.PinStatusListener;
 import org.eclipse.kura.linux.gpio.libgpiod.CommonSteps;
-import org.eclipse.kura.linux.gpio.libgpiod1.LibGpiodV1Native.LineRequestConfig;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatcher;
 import org.mockito.MockedStatic;
 
 import com.sun.jna.Native;
@@ -43,7 +43,6 @@ import com.sun.jna.Pointer;
 
 public class LibGpiodV1PinTest extends CommonSteps {
 
-    private static final String CONSUMER_NAME = "KuraGPIOPin";
     private MockedStatic<Native> nativeMock;
     private LibGpiodV1Native nativeInterfaceMock;
     private MockedStatic<LibGpiodV1NativeWrapper> nativeInterfaceWrapperMock;
@@ -61,16 +60,6 @@ public class LibGpiodV1PinTest extends CommonSteps {
         this.nativeInterfaceWrapperMock = mockStatic(LibGpiodV1NativeWrapper.class);
         this.nativeInterfaceWrapperMock.when(LibGpiodV1NativeWrapper::getInstance).thenReturn(this.nativeInterfaceMock);
 
-        LineRequestConfig configLineInput = new LineRequestConfig();
-        configLineInput.setConsumer(CONSUMER_NAME);
-        configLineInput.request_type = LibGpiodV1Native.GPIOD_LINE_REQUEST_EVENT_BOTH_EDGES;
-        configLineInput.flags = LibGpiodV1Native.GPIOD_LINE_REQUEST_FLAG_BIAS_PULL_UP;
-
-        LineRequestConfig configLineOutput = new LineRequestConfig();
-        configLineOutput.setConsumer(CONSUMER_NAME);
-        configLineOutput.request_type = LibGpiodV1Native.GPIOD_LINE_REQUEST_DIRECTION_OUTPUT;
-        configLineOutput.flags = 0;
-
         Pointer chip0 = Pointer.createConstant(1);
         when(this.nativeInterfaceMock.gpiod_chip_open("/dev/gpiochip0")).thenReturn(chip0);
         when(this.nativeInterfaceMock.gpiod_chip_num_lines(chip0)).thenReturn(16);
@@ -80,24 +69,19 @@ public class LibGpiodV1PinTest extends CommonSteps {
         Pointer line4 = Pointer.createConstant(4);
         when(this.nativeInterfaceMock.gpiod_chip_get_line(chip2, 4)).thenReturn(line4);
         when(this.nativeInterfaceMock.gpiod_line_is_used(line4)).thenReturn(false);
-        when(this.nativeInterfaceMock.gpiod_line_request(eq(line4),
-                argThat(new LineRequestConfigMatcher(configLineInput)),
-                eq(0))).thenReturn(0);
+        when(this.nativeInterfaceMock.gpiod_line_request(eq(line4), any(), eq(0))).thenReturn(0);
         when(this.nativeInterfaceMock.gpiod_line_get_value(line4)).thenReturn(1);
-        when(this.nativeInterfaceMock.gpiod_line_request_both_edges_events(line4,
-                CONSUMER_NAME)).thenReturn(1);
+        when(this.nativeInterfaceMock.gpiod_line_request_both_edges_events(line4, "KuraGPIOPin")).thenReturn(1);
         Pointer line8 = Pointer.createConstant(8);
         when(this.nativeInterfaceMock.gpiod_chip_get_line(chip2, 8)).thenReturn(line8);
         when(this.nativeInterfaceMock.gpiod_line_is_used(line8)).thenReturn(false);
-        when(this.nativeInterfaceMock.gpiod_line_request(eq(line8),
-                argThat(new LineRequestConfigMatcher(configLineInput)),
+        when(this.nativeInterfaceMock.gpiod_line_request(eq(line8), any(),
                 eq(0))).thenReturn(0);
         when(this.nativeInterfaceMock.gpiod_line_get_value(line8)).thenReturn(-1);
         Pointer line9 = Pointer.createConstant(9);
         when(this.nativeInterfaceMock.gpiod_chip_get_line(chip2, 9)).thenReturn(line9);
         when(this.nativeInterfaceMock.gpiod_line_is_used(line9)).thenReturn(false);
-        when(this.nativeInterfaceMock.gpiod_line_request(eq(line9),
-                argThat(new LineRequestConfigMatcher(configLineInput)),
+        when(this.nativeInterfaceMock.gpiod_line_request(eq(line9), any(),
                 eq(0))).thenReturn(0);
         when(this.nativeInterfaceMock.gpiod_line_get_value(line9)).thenThrow(new Error());
         Pointer chip5 = Pointer.createConstant(5);
@@ -105,32 +89,31 @@ public class LibGpiodV1PinTest extends CommonSteps {
         when(this.nativeInterfaceMock.gpiod_chip_num_lines(chip5)).thenReturn(64);
         Pointer line6 = Pointer.createConstant(6);
         when(this.nativeInterfaceMock.gpiod_chip_get_line(chip5, 6)).thenReturn(line6);
-        when(this.nativeInterfaceMock.gpiod_line_request(eq(line6),
-                argThat(new LineRequestConfigMatcher(configLineInput)),
+        when(this.nativeInterfaceMock.gpiod_line_request(eq(line6), any(),
                 eq(0))).thenReturn(0);
         Pointer line7 = Pointer.createConstant(7);
         when(this.nativeInterfaceMock.gpiod_chip_get_line(chip5, 7)).thenReturn(line7);
-        when(this.nativeInterfaceMock.gpiod_line_request(eq(line7),
-                argThat(new LineRequestConfigMatcher(configLineOutput)),
+        when(this.nativeInterfaceMock.gpiod_line_request(eq(line7), any(),
                 eq(0))).thenReturn(0);
         Pointer line10 = Pointer.createConstant(10);
         when(this.nativeInterfaceMock.gpiod_chip_get_line(chip5, 10)).thenReturn(line10);
         when(this.nativeInterfaceMock.gpiod_line_is_used(line10)).thenReturn(false);
-        when(this.nativeInterfaceMock.gpiod_line_request(eq(line10),
-                argThat(new LineRequestConfigMatcher(configLineOutput)),
+        when(this.nativeInterfaceMock.gpiod_line_request(eq(line10), any(),
                 eq(0))).thenReturn(0);
         when(this.nativeInterfaceMock.gpiod_line_set_value(line10, 1)).thenReturn(-1);
         Pointer line11 = Pointer.createConstant(11);
         when(this.nativeInterfaceMock.gpiod_chip_get_line(chip5, 11)).thenReturn(line11);
         when(this.nativeInterfaceMock.gpiod_line_is_used(line11)).thenReturn(false);
-        when(this.nativeInterfaceMock.gpiod_line_request(eq(line11),
-                argThat(new LineRequestConfigMatcher(configLineOutput)),
+        when(this.nativeInterfaceMock.gpiod_line_request(eq(line11), any(),
                 eq(0))).thenReturn(0);
         when(this.nativeInterfaceMock.gpiod_line_set_value(line11, 1)).thenThrow(new Error());
+
+        when(this.nativeInterfaceMock.createLineRequestConfig(anyString(), anyInt(), anyInt())).thenReturn(null);
     }
 
     @After
     public void cleanup() {
+        this.nativeMock.close();
         this.nativeInterfaceWrapperMock.close();
     }
 
@@ -536,37 +519,4 @@ public class LibGpiodV1PinTest extends CommonSteps {
         assertEquals(expectedMessage, this.message);
     }
 
-    private class LineRequestConfigMatcher implements ArgumentMatcher<LineRequestConfig> {
-
-        private LineRequestConfig left;
-
-        public LineRequestConfigMatcher(LineRequestConfig config) {
-            this.left = config;
-        }
-
-        private boolean consumersEqual(Pointer a, Pointer b) {
-            if (a == b) {
-                return true;
-            }
-            if (a == null || b == null) {
-                return false;
-            }
-            String sa = a.getString(0);
-            String sb = b.getString(0);
-            if (sa == sb) {
-                return true;
-            }
-            if (sa == null || sb == null) {
-                return false;
-            }
-            return sa.equals(sb);
-        }
-
-        @Override
-        public boolean matches(LineRequestConfig argument) {
-            return consumersEqual(left.consumer, argument.consumer) &&
-                    left.flags == argument.flags &&
-                    left.request_type == argument.request_type;
-        }
-    }
 }

@@ -1,4 +1,4 @@
-@Library('add-ons-shared-libs@java21') _
+@Library('add-ons-shared-libs@develop') _
 
 node {
     continuousIntegrationPipeline(

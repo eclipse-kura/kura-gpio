@@ -295,7 +295,7 @@ public class LibGpiodV2PinTest extends CommonSteps {
         // Call monitorEvents() explicitly, since we need to statically mock the
         // LibGpiodV2NativeWrapper class and this is possible only in the current
         // thread.
-        whenV2PinRemovePinStatusListenerAfterSeconds(2);
+        whenV1PinRemovePinStatusListenerAfterMilliseconds(20);
         whenV2PinMonitorEvents();
 
         thenNoExceptionOccurred();
@@ -312,7 +312,7 @@ public class LibGpiodV2PinTest extends CommonSteps {
         // Call monitorEvents() explicitly, since we need to statically mock the
         // LibGpiodV2NativeWrapper class and this is possible only in the current
         // thread.
-        whenV2PinRemovePinStatusListenerAfterSeconds(2);
+        whenV1PinRemovePinStatusListenerAfterMilliseconds(20);
         whenV2PinMonitorEvents();
 
         thenNoExceptionOccurred();
@@ -329,7 +329,7 @@ public class LibGpiodV2PinTest extends CommonSteps {
         // Call monitorEvents() explicitly, since we need to statically mock the
         // LibGpiodV2NativeWrapper class and this is possible only in the current
         // thread.
-        whenV2PinRemovePinStatusListenerAfterSeconds(2);
+        whenV1PinRemovePinStatusListenerAfterMilliseconds(20);
         whenV2PinMonitorEvents();
 
         thenNoExceptionOccurred();
@@ -346,7 +346,7 @@ public class LibGpiodV2PinTest extends CommonSteps {
         // Call monitorEvents() explicitly, since we need to statically mock the
         // LibGpiodV2NativeWrapper class and this is possible only in the current
         // thread.
-        whenV2PinRemovePinStatusListenerAfterSeconds(2);
+        whenV1PinRemovePinStatusListenerAfterMilliseconds(20);
         whenV2PinMonitorEvents();
 
         thenNoExceptionOccurred();
@@ -383,7 +383,7 @@ public class LibGpiodV2PinTest extends CommonSteps {
         // Call monitorEvents() explicitly, since we need to statically mock the
         // LibGpiodV2NativeWrapper class and this is possible only in the current
         // thread.
-        whenV2PinRemovePinStatusListenerAfterSeconds(2);
+        whenV1PinRemovePinStatusListenerAfterMilliseconds(20);
         whenV2PinMonitorEvents();
 
         thenNoExceptionOccurred();
@@ -564,13 +564,13 @@ public class LibGpiodV2PinTest extends CommonSteps {
         }
     }
 
-    private void whenV2PinRemovePinStatusListenerAfterSeconds(int seconds) {
+    private void whenV1PinRemovePinStatusListenerAfterMilliseconds(int milliseconds) {
         this.executor.schedule(new Runnable() {
             @Override
             public void run() {
                 whenV2PinRemovePinStatusListener(LibGpiodV2PinTest.this.pinStatusListener);
             }
-        }, seconds, TimeUnit.SECONDS);
+        }, milliseconds, TimeUnit.MILLISECONDS);
     }
 
     private void whenV2PinMonitorEvents() {

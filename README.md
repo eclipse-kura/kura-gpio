@@ -13,7 +13,7 @@ Eclipse Kura™ GPIO addon
 Install
 -------
 
-Eclipse Kura-GPIO™ is compatible with Java 17.
+Eclipse Kura-GPIO™ is compatible with Java 21.
 
 ### Target Installer
 Eclipse Kura-GPIO™ provides an Eclipse Kura™ addon for managing GPIOs.
@@ -32,7 +32,7 @@ Build
 ### Prerequisites
 
 In order to be able to build Eclipse Kura™ GPIO on your development machine, you need to have the following programs installed in your system:
-* JDK 17
+* JDK 21
 * Maven 3.9.x
 
 <details>
@@ -42,7 +42,7 @@ In order to be able to build Eclipse Kura™ GPIO on your development machine, y
 
 </summary>
 
-To install Java 17, download the JDK tar archive from the [Adoptium Project Repository](https://adoptium.net/en-GB/temurin/releases/?variant=openjdk8&jvmVariant=hotspot&version=17).
+To install Java 21, download the JDK tar archive from the [Adoptium Project Repository](https://adoptium.net/en-GB/temurin/releases/?variant=openjdk8&jvmVariant=hotspot&version=17).
 
 Once downloaded, copy the tar archive in `/Library/Java/JavaVirtualMachines/` and cd into it. Unpack the archive with the following command:
 
@@ -82,7 +82,7 @@ export PATH="/usr/local/opt/maven@3.9/bin:$PATH"
 
 For Java
 ```bash
-sudo apt install openjdk-17-jdk
+sudo apt install openjdk-21-jdk
 ```
 For Maven   
 

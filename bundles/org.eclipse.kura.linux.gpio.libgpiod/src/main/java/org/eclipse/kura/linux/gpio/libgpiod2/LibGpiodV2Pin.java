@@ -334,7 +334,9 @@ public class LibGpiodV2Pin extends LibGpiodPin implements KuraGPIOPin {
                             int eventType = LibGpiodV2NativeWrapper.getInstance()
                                     .gpiod_edge_event_get_event_type(event);
                             boolean newValue = eventType == LibGpiodV2Native.GPIOD_EDGE_EVENT_TYPE_RISING_EDGE;
-                            this.listeners.forEach(l -> l.pinStatusChange(newValue));
+                            synchronized (this.listeners) {
+                                this.listeners.forEach(l -> l.pinStatusChange(newValue));
+                            }
                         }
                     }
                 }

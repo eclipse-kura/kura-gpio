@@ -168,19 +168,21 @@ public class LibGpiodV1Pin extends LibGpiodPin implements KuraGPIOPin {
 
     private void notifyPinStatusChange(LineEvent event) {
         boolean newValue = event.event_type == LibGpiodV1Native.GPIOD_LINE_EVENT_RISING_EDGE;
-        this.listeners.forEach(listener -> {
-            if (this.trigger.equals(KuraGPIOTrigger.BOTH_EDGES)) {
-                listener.pinStatusChange(newValue);
-                return;
-            }
-            if (this.trigger.equals(KuraGPIOTrigger.RAISING_EDGE) && newValue) {
-                listener.pinStatusChange(newValue);
-                return;
-            }
-            if (this.trigger.equals(KuraGPIOTrigger.FALLING_EDGE) && !newValue) {
-                listener.pinStatusChange(newValue);
-            }
-        });
+        synchronized (this.listeners) {
+            this.listeners.forEach(listener -> {
+                if (this.trigger.equals(KuraGPIOTrigger.BOTH_EDGES)) {
+                    listener.pinStatusChange(newValue);
+                    return;
+                }
+                if (this.trigger.equals(KuraGPIOTrigger.RAISING_EDGE) && newValue) {
+                    listener.pinStatusChange(newValue);
+                    return;
+                }
+                if (this.trigger.equals(KuraGPIOTrigger.FALLING_EDGE) && !newValue) {
+                    listener.pinStatusChange(newValue);
+                }
+            });
+        }
     }
 
     private void openGpioChip() throws KuraUnavailableDeviceException {

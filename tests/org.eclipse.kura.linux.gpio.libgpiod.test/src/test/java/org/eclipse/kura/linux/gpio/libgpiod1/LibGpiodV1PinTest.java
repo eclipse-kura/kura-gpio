@@ -115,6 +115,7 @@ public class LibGpiodV1PinTest extends CommonSteps {
     public void cleanup() {
         this.nativeMock.close();
         this.nativeInterfaceWrapperMock.close();
+        this.executor.shutdownNow();
     }
 
     @Test
@@ -286,7 +287,7 @@ public class LibGpiodV1PinTest extends CommonSteps {
         // Call monitorEvents() explicitly, since we need to statically mock the
         // LibGpiodV1NativeWrapper class and this is possible only in the current
         // thread.
-        whenV1PinRemovePinStatusListenerAfterSeconds(2);
+        whenV1PinRemovePinStatusListenerAfterMilliseconds(20);
         whenV1PinMonitorEvents();
 
         thenNoExceptionOccurred();
@@ -300,7 +301,7 @@ public class LibGpiodV1PinTest extends CommonSteps {
 
         whenV1PinIsOpened();
         whenV1PinAddPinStatusListener(this.pinStatusListener);
-        whenV1PinRemovePinStatusListenerAfterSeconds(2);
+        whenV1PinRemovePinStatusListenerAfterMilliseconds(20);
         // Call monitorEvents() explicitly, since we need to statically mock the
         // LibGpiodV1NativeWrapper class and this is possible only in the current
         // thread.
@@ -317,7 +318,7 @@ public class LibGpiodV1PinTest extends CommonSteps {
 
         whenV1PinIsOpened();
         whenV1PinAddPinStatusListener(this.pinStatusListener);
-        whenV1PinRemovePinStatusListenerAfterSeconds(2);
+        whenV1PinRemovePinStatusListenerAfterMilliseconds(20);
         // Call monitorEvents() explicitly, since we need to statically mock the
         // LibGpiodV1NativeWrapper class and this is possible only in the current
         // thread.
@@ -334,7 +335,7 @@ public class LibGpiodV1PinTest extends CommonSteps {
 
         whenV1PinIsOpened();
         whenV1PinAddPinStatusListener(this.pinStatusListener);
-        whenV1PinRemovePinStatusListenerAfterSeconds(2);
+        whenV1PinRemovePinStatusListenerAfterMilliseconds(20);
         // Call monitorEvents() explicitly, since we need to statically mock the
         // LibGpiodV1NativeWrapper class and this is possible only in the current
         // thread.
@@ -499,13 +500,13 @@ public class LibGpiodV1PinTest extends CommonSteps {
         }
     }
 
-    private void whenV1PinRemovePinStatusListenerAfterSeconds(int seconds) {
+    private void whenV1PinRemovePinStatusListenerAfterMilliseconds(int milliseconds) {
         this.executor.schedule(new Runnable() {
             @Override
             public void run() {
                 whenV1PinRemovePinStatusListener(LibGpiodV1PinTest.this.pinStatusListener);
             }
-        }, seconds, TimeUnit.SECONDS);
+        }, milliseconds, TimeUnit.MILLISECONDS);
     }
 
     private void whenV1PinMonitorEvents() {

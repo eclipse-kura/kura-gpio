@@ -119,6 +119,7 @@ public class LibGpiodV2PinTest extends CommonSteps {
     public void cleanup() {
         this.nativeMock.close();
         this.nativeInterfaceWrapperMock.close();
+        this.executor.shutdownNow();
     }
 
     @Test
@@ -298,7 +299,7 @@ public class LibGpiodV2PinTest extends CommonSteps {
         whenV2PinMonitorEvents();
 
         thenNoExceptionOccurred();
-        thenListenerIsInvockedAtLeastTimes(1);
+        thenListenerIsInvokedAtLeastTimes(1);
     }
 
     @Test
@@ -315,7 +316,7 @@ public class LibGpiodV2PinTest extends CommonSteps {
         whenV2PinMonitorEvents();
 
         thenNoExceptionOccurred();
-        thenListenerIsInvockedAtLeastTimes(0);
+        thenListenerIsInvokedAtLeastTimes(0);
     }
 
     @Test
@@ -332,7 +333,7 @@ public class LibGpiodV2PinTest extends CommonSteps {
         whenV2PinMonitorEvents();
 
         thenNoExceptionOccurred();
-        thenListenerIsInvockedAtLeastTimes(1);
+        thenListenerIsInvokedAtLeastTimes(1);
     }
 
     @Test
@@ -349,7 +350,7 @@ public class LibGpiodV2PinTest extends CommonSteps {
         whenV2PinMonitorEvents();
 
         thenNoExceptionOccurred();
-        thenListenerIsInvockedAtLeastTimes(0);
+        thenListenerIsInvokedAtLeastTimes(0);
     }
 
     @Test
@@ -386,7 +387,7 @@ public class LibGpiodV2PinTest extends CommonSteps {
         whenV2PinMonitorEvents();
 
         thenNoExceptionOccurred();
-        thenListenerIsInvockedAtLeastTimes(1);
+        thenListenerIsInvokedAtLeastTimes(1);
     }
 
     @Test
@@ -631,7 +632,7 @@ public class LibGpiodV2PinTest extends CommonSteps {
         assertEquals(expectedMessage, this.message);
     }
 
-    private void thenListenerIsInvockedAtLeastTimes(int times) {
+    private void thenListenerIsInvokedAtLeastTimes(int times) {
         verify(this.pinStatusListener, atLeast(times)).pinStatusChange(anyBoolean());
     }
 

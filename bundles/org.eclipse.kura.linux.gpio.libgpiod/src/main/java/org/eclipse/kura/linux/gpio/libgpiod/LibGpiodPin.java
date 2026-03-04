@@ -101,10 +101,12 @@ public abstract class LibGpiodPin {
             throw new KuraClosedDeviceException(getName());
         }
 
-        if (this.listeners.contains(listener)) {
-            return;
+        synchronized (this.listeners) {
+            if (this.listeners.contains(listener)) {
+                return;
+            }
+            this.listeners.add(listener);
         }
-        this.listeners.add(listener);
 
         if (shouldMonitorEvents()) {
             startEventMonitoring();
@@ -153,13 +155,15 @@ public abstract class LibGpiodPin {
             throw new IllegalArgumentException("Listener cannot be null");
         }
 
-        if (!this.listeners.contains(listener)) {
-            return;
-        }
-        this.listeners.remove(listener);
+        synchronized (this.listeners) {
+            if (!this.listeners.contains(listener)) {
+                return;
+            }
+            this.listeners.remove(listener);
 
-        if (this.listeners.isEmpty()) {
-            stopEventMonitoring();
+            if (this.listeners.isEmpty()) {
+                stopEventMonitoring();
+            }
         }
     }
 

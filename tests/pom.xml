@@ -30,19 +30,14 @@
 
     <properties>
         <kura.workdir>${project.build.directory}/test-env</kura.workdir>
+        <mockito.version>5.21.0</mockito.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>4.8.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-inline</artifactId>
-            <version>4.8.1</version>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -192,6 +187,8 @@
                             -Dkura.data=${kura.workdir}/data
                             -Dkura.snapshots=${kura.workdir}/user/snapshots
                             -Dlog4j.configurationFile=file:${kura.workdir}/log4j/log4j.xml
+                            -Djava.security.manager=allow
+                            -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
                         </argLine>
                         <!--
                         uncomment for gogo shell, usage: telnet localhost 5002
@@ -227,7 +224,10 @@
                                 <goal>test</goal>
                             </goals>
                             <configuration>
-                                <argLine>${tycho.testArgLine}</argLine>
+                                <argLine>
+                                    ${tycho.testArgLine}
+                                    -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
+                                </argLine>
                             </configuration>
                         </execution>
                     </executions>

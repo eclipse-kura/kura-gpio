@@ -291,7 +291,7 @@ public class LibGpiodV1PinTest extends CommonSteps {
         whenV1PinMonitorEvents();
 
         thenNoExceptionOccurred();
-        thenListenerIsInvockedTimes(0);
+        thenListenerIsInvokedTimes(0);
     }
 
     @Test
@@ -308,7 +308,7 @@ public class LibGpiodV1PinTest extends CommonSteps {
         whenV1PinMonitorEvents();
 
         thenNoExceptionOccurred();
-        thenListenerIsInvockedTimes(0);
+        thenListenerIsInvokedTimes(0);
     }
 
     @Test
@@ -325,7 +325,7 @@ public class LibGpiodV1PinTest extends CommonSteps {
         whenV1PinMonitorEvents();
 
         thenNoExceptionOccurred();
-        thenListenerIsInvockedTimes(0);
+        thenListenerIsInvokedTimes(0);
     }
 
     @Test
@@ -342,7 +342,7 @@ public class LibGpiodV1PinTest extends CommonSteps {
         whenV1PinMonitorEvents();
 
         thenNoExceptionOccurred();
-        thenListenerIsInvockedTimes(0);
+        thenListenerIsInvokedTimes(0);
     }
 
     @Test
@@ -560,7 +560,7 @@ public class LibGpiodV1PinTest extends CommonSteps {
         assertEquals(expectedMessage, this.message);
     }
 
-    private void thenListenerIsInvockedTimes(int times) {
+    private void thenListenerIsInvokedTimes(int times) {
         verify(this.pinStatusListener, times(times)).pinStatusChange(anyBoolean());
     }
 }

@@ -7,7 +7,7 @@ node {
             enable: true,
             projectKey: "eclipse-kura_kura-gpio",
             tokenId: "sonarcloud-token-kura-gpio",
-            exclusions: "tests/**/*,**/*.xml,**/*.yml",
+            exclusions: "tests/**/*,**/*.xml,**/*.yml,bundles/**/*Native.java",
             testExclusions: "**/*"
         ],
     )

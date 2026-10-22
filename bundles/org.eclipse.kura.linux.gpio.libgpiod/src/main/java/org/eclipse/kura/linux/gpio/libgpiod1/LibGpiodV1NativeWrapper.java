@@ -21,5 +21,4 @@ public class LibGpiodV1NativeWrapper {
     public static LibGpiodV1Native getInstance() {
         return LibGpiodV1Native.INSTANCE;
     }
-
 }

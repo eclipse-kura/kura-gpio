@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2025, 2026 Eurotech and/or its affiliates and others
- * 
+ *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
- * 
+ *
  * Contributors:
  *  Eurotech
  *******************************************************************************/
@@ -22,7 +22,6 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.kura.gpio.GPIOService;
 import org.eclipse.kura.gpio.KuraGPIODirection;
 import org.eclipse.kura.gpio.KuraGPIOMode;
@@ -45,7 +44,8 @@ public class GPIOServiceImplTest extends CommonSteps {
     public void setup() {
         this.libGpiodGPIOServiceFactoryMock = mockStatic(LibGpiodGPIOServiceFactory.class);
         this.GPIOServiceMock = mock(GPIOService.class);
-        this.libGpiodGPIOServiceFactoryMock.when(LibGpiodGPIOServiceFactory::getInstance)
+        this.libGpiodGPIOServiceFactoryMock
+                .when(LibGpiodGPIOServiceFactory::getInstance)
                 .thenReturn(java.util.Optional.of(this.GPIOServiceMock));
         Map<Integer, String> availablePins = new HashMap<>();
         availablePins.put(1001, "GPIO_01");
@@ -186,8 +186,7 @@ public class GPIOServiceImplTest extends CommonSteps {
         givenGPIOServicePin(2, 2, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.BOTH_EDGES);
         givenGPIOServiceImpl();
 
-        whenGetPins(2, 2, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP,
-                KuraGPIOTrigger.BOTH_EDGES);
+        whenGetPins(2, 2, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.BOTH_EDGES);
 
         thenExceptionOccurred(IllegalStateException.class);
     }
@@ -198,8 +197,7 @@ public class GPIOServiceImplTest extends CommonSteps {
         givenGPIOServiceImpl();
         givenActivatedGPIOService();
 
-        whenGetPins(2, 2, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP,
-                KuraGPIOTrigger.BOTH_EDGES);
+        whenGetPins(2, 2, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.BOTH_EDGES);
 
         thenPinIsNotNull();
     }
@@ -240,8 +238,8 @@ public class GPIOServiceImplTest extends CommonSteps {
         when(GPIOServiceMock.getPinByName(pinName)).thenReturn(pinMock);
     }
 
-    private void givenGPIOServicePin(String pinName, KuraGPIODirection direction, KuraGPIOMode mode,
-            KuraGPIOTrigger trigger) {
+    private void givenGPIOServicePin(
+            String pinName, KuraGPIODirection direction, KuraGPIOMode mode, KuraGPIOTrigger trigger) {
         KuraGPIOPin pinMock = mock(KuraGPIOPin.class);
         when(GPIOServiceMock.getPinByName(pinName, direction, mode, trigger)).thenReturn(pinMock);
     }
@@ -251,10 +249,11 @@ public class GPIOServiceImplTest extends CommonSteps {
         when(GPIOServiceMock.getPinByTerminal(pinTerminal)).thenReturn(pinMock);
     }
 
-    private void givenGPIOServicePin(int pinTerminal, KuraGPIODirection direction, KuraGPIOMode mode,
-            KuraGPIOTrigger trigger) {
+    private void givenGPIOServicePin(
+            int pinTerminal, KuraGPIODirection direction, KuraGPIOMode mode, KuraGPIOTrigger trigger) {
         KuraGPIOPin pinMock = mock(KuraGPIOPin.class);
-        when(GPIOServiceMock.getPinByTerminal(pinTerminal, direction, mode, trigger)).thenReturn(pinMock);
+        when(GPIOServiceMock.getPinByTerminal(pinTerminal, direction, mode, trigger))
+                .thenReturn(pinMock);
     }
 
     private void givenGPIOServicePin(int pinController, int pinLine) {
@@ -265,8 +264,8 @@ public class GPIOServiceImplTest extends CommonSteps {
         when(GPIOServiceMock.getPins(properties)).thenReturn(Arrays.asList(pinMock));
     }
 
-    private void givenGPIOServicePin(int pinController, int pinLine, KuraGPIODirection direction, KuraGPIOMode mode,
-            KuraGPIOTrigger trigger) {
+    private void givenGPIOServicePin(
+            int pinController, int pinLine, KuraGPIODirection direction, KuraGPIOMode mode, KuraGPIOTrigger trigger) {
         KuraGPIOPin pinMock = mock(KuraGPIOPin.class);
         Map<String, String> properties = new HashMap<>();
         properties.put("controller", Integer.toString(pinController));
@@ -302,8 +301,8 @@ public class GPIOServiceImplTest extends CommonSteps {
         }
     }
 
-    private void whenGetPinByName(String pinName, KuraGPIODirection direction, KuraGPIOMode mode,
-            KuraGPIOTrigger trigger) {
+    private void whenGetPinByName(
+            String pinName, KuraGPIODirection direction, KuraGPIOMode mode, KuraGPIOTrigger trigger) {
         try {
             this.resultPin = this.gpioServiceImpl.getPinByName(pinName, direction, mode, trigger);
         } catch (Exception e) {
@@ -319,8 +318,8 @@ public class GPIOServiceImplTest extends CommonSteps {
         }
     }
 
-    private void whenGetPinByTerminal(int terminal, KuraGPIODirection direction, KuraGPIOMode mode,
-            KuraGPIOTrigger trigger) {
+    private void whenGetPinByTerminal(
+            int terminal, KuraGPIODirection direction, KuraGPIOMode mode, KuraGPIOTrigger trigger) {
         try {
             this.resultPin = this.gpioServiceImpl.getPinByTerminal(terminal, direction, mode, trigger);
         } catch (Exception e) {
@@ -339,13 +338,15 @@ public class GPIOServiceImplTest extends CommonSteps {
         }
     }
 
-    private void whenGetPins(int controller, int line, KuraGPIODirection direction, KuraGPIOMode mode,
-            KuraGPIOTrigger trigger) {
+    private void whenGetPins(
+            int controller, int line, KuraGPIODirection direction, KuraGPIOMode mode, KuraGPIOTrigger trigger) {
         try {
             Map<String, String> properties = new HashMap<>();
             properties.put("controller", Integer.toString(controller));
             properties.put("line", Integer.toString(line));
-            this.resultPin = this.gpioServiceImpl.getPins(properties, direction, mode, trigger).get(0);
+            this.resultPin = this.gpioServiceImpl
+                    .getPins(properties, direction, mode, trigger)
+                    .get(0);
         } catch (Exception e) {
             this.occurredException = e;
         }

@@ -13,9 +13,7 @@
      Eurotech
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -24,16 +22,14 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <properties>
-        <sonar.coverage.jacoco.xmlReportPaths>
-            ${project.basedir}/../../tests/*/target/site/jacoco-aggregate/jacoco.xml
-        </sonar.coverage.jacoco.xmlReportPaths>
-    </properties>
-
     <artifactId>org.eclipse.kura.linux.gpio.libgpiod</artifactId>
     <packaging>eclipse-plugin</packaging>
 
-	<dependencies>
+    <properties>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../../tests/*/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+    </properties>
+
+    <dependencies>
         <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
@@ -45,7 +41,7 @@
             <version>${jna.version}</version>
         </dependency>
     </dependencies>
-    
+
     <build>
         <plugins>
             <plugin>
@@ -54,15 +50,13 @@
                 <executions>
                     <execution>
                         <id>copy-dependencies</id>
-                        <phase>generate-sources</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
+                        <phase>generate-sources</phase>
                         <configuration>
                             <outputDirectory>${project.basedir}/lib</outputDirectory>
-                            <includeArtifactIds>
-                                jna, jna-platform
-                            </includeArtifactIds>
+                            <includeArtifactIds>jna, jna-platform</includeArtifactIds>
                             <stripVersion>true</stripVersion>
                         </configuration>
                     </execution>
@@ -70,5 +64,5 @@
             </plugin>
         </plugins>
     </build>
-    
+
 </project>

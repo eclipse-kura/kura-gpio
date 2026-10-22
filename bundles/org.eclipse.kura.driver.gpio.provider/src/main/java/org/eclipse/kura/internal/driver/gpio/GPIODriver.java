@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2018, 2026 Eurotech and/or its affiliates and others
- * 
+ *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
- * 
+ *
  * Contributors:
  *  Eurotech
  */
@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
 import org.eclipse.kura.channel.ChannelFlag;
 import org.eclipse.kura.channel.ChannelRecord;
 import org.eclipse.kura.channel.ChannelStatus;
@@ -81,16 +80,17 @@ import org.slf4j.LoggerFactory;
         name = "org.eclipse.kura.driver.gpio", //
         enabled = true, //
         configurationPolicy = ConfigurationPolicy.REQUIRE, //
-        service = { Driver.class, ConfigurableComponent.class }, //
-        property = { "service.pid=org.eclipse.kura.driver.gpio" } //
-)
+        service = {Driver.class, ConfigurableComponent.class}, //
+        property = {"service.pid=org.eclipse.kura.driver.gpio"} //
+        )
 @Designate(ocd = GPIODriverOCD.class, factory = false)
 public final class GPIODriver implements Driver, ConfigurableComponent {
 
     private static final Logger logger = LoggerFactory.getLogger(GPIODriver.class);
     private static final String WRITE_FAILED_MESSAGE = "GPIO write operation failed";
     private static final String READ_FAILED_MESSAGE = "GPIO read operation failed";
-    private static final String VALUE_CONVERSION_ERROR_MESSAGE = "Error while converting the retrieved value to the defined typed";
+    private static final String VALUE_CONVERSION_ERROR_MESSAGE =
+            "Error while converting the retrieved value to the defined typed";
 
     private Set<KuraGPIODescription> gpioDescriptions;
     private Set<GPIOListener> gpioListeners;
@@ -101,7 +101,7 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
             cardinality = ReferenceCardinality.AT_LEAST_ONE, //
             policy = org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC, //
             unbind = "unbindGPIOService" //
-    )
+            )
     protected synchronized void bindGPIOService(final GPIOService gpioService) {
         if (!this.gpioServices.contains(gpioService)) {
             this.gpioServices.add(gpioService);
@@ -220,8 +220,8 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
     }
 
     @Override
-    public synchronized void registerChannelListener(final Map<String, Object> channelConfig,
-            final ChannelListener listener) throws ConnectionException {
+    public synchronized void registerChannelListener(
+            final Map<String, Object> channelConfig, final ChannelListener listener) throws ConnectionException {
         String name = GPIOChannelDescriptor.getResourceName(channelConfig);
         KuraGPIODirection direction = GPIOChannelDescriptor.getResourceDirection(channelConfig);
         KuraGPIOMode mode = GPIOChannelDescriptor.getResourceMode(channelConfig);
@@ -239,8 +239,11 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
                 pin = getPin(name, direction, mode, trigger);
             }
             if (pin != null) {
-                GPIOListener gpioListener = new GPIOListener(pin, (String) channelConfig.get("+name"),
-                        DataType.getDataType((String) channelConfig.get("+value.type")), listener);
+                GPIOListener gpioListener = new GPIOListener(
+                        pin,
+                        (String) channelConfig.get("+name"),
+                        DataType.getDataType((String) channelConfig.get("+value.type")),
+                        listener);
                 this.gpioListeners.add(gpioListener);
                 try {
                     pin.addPinStatusListener(gpioListener);
@@ -261,7 +264,10 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
                     gpioListener.getPin().removePinStatusListener(gpioListener);
                     iterator.remove();
                 } catch (KuraClosedDeviceException | IOException e) {
-                    logger.error("Unable to unset listener for pin {}", gpioListener.getPin().getDescription(), e);
+                    logger.error(
+                            "Unable to unset listener for pin {}",
+                            gpioListener.getPin().getDescription(),
+                            e);
                 }
             }
         }
@@ -274,8 +280,11 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
             try {
                 final TypedValue<Boolean> value = getBooleanValue(channelRecord.getValue());
                 this.gpioDescriptions.add(extractGPIODescription(requestInfo.resourceName));
-                KuraGPIOPin pin = getPin(requestInfo.resourceName, requestInfo.resourceDirection,
-                        requestInfo.resourceMode, requestInfo.resourceTrigger);
+                KuraGPIOPin pin = getPin(
+                        requestInfo.resourceName,
+                        requestInfo.resourceDirection,
+                        requestInfo.resourceMode,
+                        requestInfo.resourceTrigger);
                 if (pin != null) {
                     pin.setValue(value.getValue());
                     channelRecord.setChannelStatus(new ChannelStatus(SUCCESS));
@@ -295,15 +304,18 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
         logger.warn(errorMessage);
     }
 
-    private KuraGPIOPin getPin(String resourceName, KuraGPIODirection resourceDirection, KuraGPIOMode resourceMode,
+    private KuraGPIOPin getPin(
+            String resourceName,
+            KuraGPIODirection resourceDirection,
+            KuraGPIOMode resourceMode,
             KuraGPIOTrigger resourceTrigger) {
         // The resource name is in the form name:controller:line, so it identifies only
         // one specific gpio.
         KuraGPIOPin pin = null;
         for (GPIOService service : this.gpioServices) {
             KuraGPIODescription description = extractGPIODescription(resourceName);
-            List<KuraGPIOPin> pins = service.getPins(description.getProperties(), resourceDirection, resourceMode,
-                    resourceTrigger);
+            List<KuraGPIOPin> pins =
+                    service.getPins(description.getProperties(), resourceDirection, resourceMode, resourceTrigger);
             if (!pins.isEmpty()) {
                 pin = pins.get(0);
                 if (!pin.isOpen()) {
@@ -335,8 +347,8 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
                 case STRING:
                     return Optional.of(TypedValues.newStringValue(containedValue ? "true" : "false"));
                 case BYTE_ARRAY:
-                    byte[] falseArray = { 0x00 };
-                    byte[] trueArray = { 0x01 };
+                    byte[] falseArray = {0x00};
+                    byte[] trueArray = {0x01};
                     return Optional.of(TypedValues.newByteArrayValue(containedValue ? trueArray : falseArray));
                 default:
                     return Optional.empty();
@@ -363,8 +375,7 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
                 case STRING:
                     String valueString = (String) value.getValue();
                     if (valueString != null && !valueString.isEmpty()) {
-                        return TypedValues
-                                .newBooleanValue(((String) value.getValue()).equalsIgnoreCase("true"));
+                        return TypedValues.newBooleanValue(((String) value.getValue()).equalsIgnoreCase("true"));
                     } else {
                         return TypedValues.newBooleanValue(false);
                     }
@@ -387,14 +398,17 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
         if (!GPIOChannelDescriptor.DEFAULT_RESOURCE_NAME.equals(requestInfo.resourceName)
                 && requestInfo.resourceDirection != null) {
             try {
-                KuraGPIOPin pin = getPin(requestInfo.resourceName, requestInfo.resourceDirection,
-                        requestInfo.resourceMode, requestInfo.resourceTrigger);
+                KuraGPIOPin pin = getPin(
+                        requestInfo.resourceName,
+                        requestInfo.resourceDirection,
+                        requestInfo.resourceMode,
+                        requestInfo.resourceTrigger);
                 if (pin != null) {
                     boolean value = pin.getValue();
                     final Optional<TypedValue<?>> typedValue = getTypedValue(requestInfo.dataType, value);
                     if (!typedValue.isPresent()) {
-                        channelRecord.setChannelStatus(new ChannelStatus(FAILURE,
-                                VALUE_CONVERSION_ERROR_MESSAGE, null));
+                        channelRecord.setChannelStatus(
+                                new ChannelStatus(FAILURE, VALUE_CONVERSION_ERROR_MESSAGE, null));
                         channelRecord.setTimestamp(System.currentTimeMillis());
                         return;
                     }
@@ -415,13 +429,13 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
         for (GPIOService service : this.gpioServices) {
             List<KuraGPIODescription> pinDescriptions = service.getAvailablePinDescriptions();
             Optional<KuraGPIODescription> optionalDescription = pinDescriptions.stream()
-                    .filter(description -> description.getDisplayName().equals(resourceName)).findFirst();
+                    .filter(description -> description.getDisplayName().equals(resourceName))
+                    .findFirst();
             if (optionalDescription.isPresent()) {
                 return optionalDescription.get();
             }
         }
-        throw new IllegalArgumentException(
-                "Unable to extract GPIO description from resource name " + resourceName);
+        throw new IllegalArgumentException("Unable to extract GPIO description from resource name " + resourceName);
     }
 
     private static class GPIORequestInfo {
@@ -525,8 +539,7 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
             ChannelRecord channelRecord = ChannelRecord.createReadRecord(this.channelName, this.dataType);
             final Optional<TypedValue<?>> typedValue = getTypedValue(this.dataType, value);
             if (!typedValue.isPresent()) {
-                channelRecord.setChannelStatus(new ChannelStatus(FAILURE,
-                        VALUE_CONVERSION_ERROR_MESSAGE, null));
+                channelRecord.setChannelStatus(new ChannelStatus(FAILURE, VALUE_CONVERSION_ERROR_MESSAGE, null));
                 channelRecord.setTimestamp(System.currentTimeMillis());
                 return;
             }
@@ -536,6 +549,5 @@ public final class GPIODriver implements Driver, ConfigurableComponent {
             channelRecord.setTimestamp(System.currentTimeMillis());
             this.listener.onChannelEvent(new ChannelEvent(channelRecord));
         }
-
     }
 }

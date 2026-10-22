@@ -11,9 +11,7 @@
     Contributors:
      Eurotech
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -25,8 +23,8 @@
 
     <artifactId>org.eclipse.kura.driver.gpio.provider.test</artifactId>
     <packaging>eclipse-test-plugin</packaging>
-    
-        <dependencies>
+
+    <dependencies>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -55,7 +53,7 @@
             <version>2.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
-    
+
     <build>
         <plugins>
 
@@ -82,7 +80,7 @@
                 <groupId>org.eclipse.tycho</groupId>
                 <artifactId>tycho-surefire-plugin</artifactId>
                 <configuration>
-                    <skipTests>true</skipTests>    
+                    <skipTests>true</skipTests>
                 </configuration>
             </plugin>
 
@@ -97,10 +95,10 @@
                 <executions>
                     <execution>
                         <id>compiletests</id>
-                        <phase>test-compile</phase>
                         <goals>
                             <goal>testCompile</goal>
                         </goals>
+                        <phase>test-compile</phase>
                     </execution>
                 </executions>
             </plugin>

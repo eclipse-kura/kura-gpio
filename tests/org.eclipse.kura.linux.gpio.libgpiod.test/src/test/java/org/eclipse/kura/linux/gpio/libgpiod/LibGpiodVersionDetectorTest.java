@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2025 Eurotech and/or its affiliates and others
- * 
+ *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
- * 
+ *
  * Contributors:
  *  Eurotech
  *******************************************************************************/
@@ -20,12 +20,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+import com.sun.jna.Native;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
-
-import com.sun.jna.Native;
 
 public class LibGpiodVersionDetectorTest extends CommonSteps {
 
@@ -41,7 +40,8 @@ public class LibGpiodVersionDetectorTest extends CommonSteps {
     public void setup() {
         this.nativeMock = mockStatic(Native.class);
         this.nativeInterfaceMock = mock(LibGpiodVersionDetector.VersionDetectionInterface.class);
-        this.nativeMock.when(() -> Native.load("gpiod", LibGpiodVersionDetector.VersionDetectionInterface.class))
+        this.nativeMock
+                .when(() -> Native.load("gpiod", LibGpiodVersionDetector.VersionDetectionInterface.class))
                 .thenReturn(this.nativeInterfaceMock);
     }
 

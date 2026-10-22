@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2026 Eurotech and/or its affiliates and others
- * 
+ *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
- * 
+ *
  * Contributors:
  *  Eurotech
  */
@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import org.eclipse.kura.configuration.metatype.Option;
 import org.eclipse.kura.core.configuration.metatype.Tad;
 import org.eclipse.kura.gpio.GPIOService;
@@ -41,6 +40,7 @@ public class GPIOChannelDescriptorTest {
 
     @Mock
     private GPIOService gpioService;
+
     private GPIOChannelDescriptor descriptor;
     private List<Tad> elements;
     private Map<String, Object> config;
@@ -92,7 +92,6 @@ public class GPIOChannelDescriptorTest {
     /**
      * Given
      */
-
     private void givenDescriptor() {
         this.descriptor = new GPIOChannelDescriptor(Arrays.asList(this.gpioService));
     }
@@ -123,7 +122,6 @@ public class GPIOChannelDescriptorTest {
     /**
      * When
      */
-
     @SuppressWarnings("unchecked")
     private void whenDescriptorIsBuilt() {
         Object descriptorObj = descriptor.getDescriptor();
@@ -141,7 +139,6 @@ public class GPIOChannelDescriptorTest {
     /**
      * Then
      */
-
     private void thenResourceNameOptionsContain(List<Tad> elements, String... expectedValues) {
         List<String> values = extractOptionValues(elements, "resource.name");
         for (String expected : expectedValues) {
@@ -177,7 +174,8 @@ public class GPIOChannelDescriptorTest {
     }
 
     private List<String> extractOptionValues(List<Tad> elements, String id) {
-        Tad element = elements.stream().filter(t -> id.equals(t.getId())).findFirst().orElse(null);
+        Tad element =
+                elements.stream().filter(t -> id.equals(t.getId())).findFirst().orElse(null);
         return element.getOption().stream().map(Option::getValue).collect(Collectors.toList());
     }
 }

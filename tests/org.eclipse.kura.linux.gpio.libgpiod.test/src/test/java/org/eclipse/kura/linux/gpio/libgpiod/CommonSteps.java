@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2025 Eurotech and/or its affiliates and others
- * 
+ *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
- * 
+ *
  * Contributors:
  *  Eurotech
  *******************************************************************************/
@@ -27,11 +27,11 @@ public class CommonSteps {
 
     protected <E extends Exception> void thenExceptionOccurred(Class<E> expectedException) {
         assertNotNull(this.occurredException);
-        assertEquals(expectedException.getName(), this.occurredException.getClass().getName());
+        assertEquals(
+                expectedException.getName(), this.occurredException.getClass().getName());
     }
 
     protected void thenNoExceptionOccurred() {
         assertNull(this.occurredException);
     }
-
 }

@@ -15,7 +15,6 @@ package org.eclipse.kura.linux.gpio.libgpiod;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import org.eclipse.kura.gpio.GPIOService;
 import org.eclipse.kura.gpio.KuraGPIODescription;
 import org.eclipse.kura.gpio.KuraGPIODirection;
@@ -28,11 +27,14 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Component(immediate = true, //
+@Component(
+        immediate = true, //
         name = "org.eclipse.kura.gpio.GPIOService", //
-        property = { "kura.service.pid=org.eclipse.kura.gpio.GPIOService",
-                "service.pid=org.eclipse.kura.gpio.GPIOService" } //
-)
+        property = {
+            "kura.service.pid=org.eclipse.kura.gpio.GPIOService",
+            "service.pid=org.eclipse.kura.gpio.GPIOService"
+        } //
+        )
 public class GPIOServiceImpl implements GPIOService {
 
     private static final Logger logger = LoggerFactory.getLogger(GPIOServiceImpl.class);
@@ -59,8 +61,8 @@ public class GPIOServiceImpl implements GPIOService {
     }
 
     @Override
-    public KuraGPIOPin getPinByName(String pinName, KuraGPIODirection direction, KuraGPIOMode mode,
-            KuraGPIOTrigger trigger) {
+    public KuraGPIOPin getPinByName(
+            String pinName, KuraGPIODirection direction, KuraGPIOMode mode, KuraGPIOTrigger trigger) {
         if (!this.gpioService.isPresent()) {
             throw new IllegalStateException("No libgpiod GPIOService implementation available");
         }
@@ -76,8 +78,8 @@ public class GPIOServiceImpl implements GPIOService {
     }
 
     @Override
-    public KuraGPIOPin getPinByTerminal(int terminal, KuraGPIODirection direction, KuraGPIOMode mode,
-            KuraGPIOTrigger trigger) {
+    public KuraGPIOPin getPinByTerminal(
+            int terminal, KuraGPIODirection direction, KuraGPIOMode mode, KuraGPIOTrigger trigger) {
         if (!this.gpioService.isPresent()) {
             throw new IllegalStateException("No libgpiod GPIOService implementation available");
         }
@@ -101,8 +103,8 @@ public class GPIOServiceImpl implements GPIOService {
     }
 
     @Override
-    public List<KuraGPIOPin> getPins(Map<String, String> description, KuraGPIODirection direction, KuraGPIOMode mode,
-            KuraGPIOTrigger trigger) {
+    public List<KuraGPIOPin> getPins(
+            Map<String, String> description, KuraGPIODirection direction, KuraGPIOMode mode, KuraGPIOTrigger trigger) {
         if (!this.gpioService.isPresent()) {
             throw new IllegalStateException("No libgpiod GPIOService implementation available");
         }
@@ -116,5 +118,4 @@ public class GPIOServiceImpl implements GPIOService {
         }
         return this.gpioService.get().getAvailablePinDescriptions();
     }
-
 }

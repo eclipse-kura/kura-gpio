@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.eclipse.kura.gpio.KuraGPIODescription;
 import org.eclipse.kura.gpio.KuraGPIODirection;
 import org.eclipse.kura.gpio.KuraGPIOMode;
@@ -26,7 +25,8 @@ public class GPIOServiceFilterTest {
     private static final int LINE_12 = 12;
 
     private StubLibGpiodService service;
-    private Map<String, String> description;;
+    private Map<String, String> description;
+    ;
     private List<KuraGPIOPin> pins;
 
     @Before
@@ -125,8 +125,7 @@ public class GPIOServiceFilterTest {
         if (line != null) {
             props.put(LibGpiodGPIOService.GPIO_LINE, Integer.toString(line));
         }
-        props.put(KuraGPIODescription.DISPLAY_NAME_PROPERTY,
-                String.format("%s:%s:%s", name, controller, line));
+        props.put(KuraGPIODescription.DISPLAY_NAME_PROPERTY, String.format("%s:%s:%s", name, controller, line));
         return new KuraGPIODescription(props);
     }
 
@@ -154,10 +153,12 @@ public class GPIOServiceFilterTest {
         }
 
         @Override
-        protected KuraGPIOPin createPin(KuraGPIODescription description, KuraGPIODirection direction,
-                KuraGPIOMode mode, KuraGPIOTrigger trigger) {
+        protected KuraGPIOPin createPin(
+                KuraGPIODescription description,
+                KuraGPIODirection direction,
+                KuraGPIOMode mode,
+                KuraGPIOTrigger trigger) {
             return mock(KuraGPIOPin.class);
         }
     }
-
 }

@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2025, 2026 Eurotech and/or its affiliates and others
- * 
+ *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
- * 
+ *
  * Contributors:
  *  Eurotech
  *******************************************************************************/
@@ -28,10 +28,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
 import java.io.IOException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
 import org.eclipse.kura.gpio.KuraClosedDeviceException;
 import org.eclipse.kura.gpio.KuraGPIODirection;
 import org.eclipse.kura.gpio.KuraGPIOMode;
@@ -42,9 +43,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
-
-import com.sun.jna.Native;
-import com.sun.jna.Pointer;
 
 public class LibGpiodV1PinTest extends CommonSteps {
 
@@ -64,7 +62,9 @@ public class LibGpiodV1PinTest extends CommonSteps {
         this.nativeInterfaceMock = mock(LibGpiodV1Native.class);
         this.nativeMock.when(() -> Native.load("gpiod", LibGpiodV1Native.class)).thenReturn(this.nativeInterfaceMock);
         this.nativeInterfaceWrapperMock = mockStatic(LibGpiodV1NativeWrapper.class);
-        this.nativeInterfaceWrapperMock.when(LibGpiodV1NativeWrapper::getInstance).thenReturn(this.nativeInterfaceMock);
+        this.nativeInterfaceWrapperMock
+                .when(LibGpiodV1NativeWrapper::getInstance)
+                .thenReturn(this.nativeInterfaceMock);
 
         Pointer chip0 = Pointer.createConstant(1);
         when(this.nativeInterfaceMock.gpiod_chip_open("/dev/gpiochip0")).thenReturn(chip0);
@@ -75,40 +75,49 @@ public class LibGpiodV1PinTest extends CommonSteps {
         Pointer line4 = Pointer.createConstant(4);
         when(this.nativeInterfaceMock.gpiod_chip_get_line(chip2, 4)).thenReturn(line4);
         when(this.nativeInterfaceMock.gpiod_line_is_used(line4)).thenReturn(false);
-        when(this.nativeInterfaceMock.gpiod_line_request(eq(line4), any(), eq(0))).thenReturn(0);
+        when(this.nativeInterfaceMock.gpiod_line_request(eq(line4), any(), eq(0)))
+                .thenReturn(0);
         when(this.nativeInterfaceMock.gpiod_line_get_value(line4)).thenReturn(1);
-        when(this.nativeInterfaceMock.gpiod_line_request_both_edges_events(line4, "KuraGPIOPin")).thenReturn(1);
+        when(this.nativeInterfaceMock.gpiod_line_request_both_edges_events(line4, "KuraGPIOPin"))
+                .thenReturn(1);
         Pointer line8 = Pointer.createConstant(8);
         when(this.nativeInterfaceMock.gpiod_chip_get_line(chip2, 8)).thenReturn(line8);
         when(this.nativeInterfaceMock.gpiod_line_is_used(line8)).thenReturn(false);
-        when(this.nativeInterfaceMock.gpiod_line_request(eq(line8), any(), eq(0))).thenReturn(0);
+        when(this.nativeInterfaceMock.gpiod_line_request(eq(line8), any(), eq(0)))
+                .thenReturn(0);
         when(this.nativeInterfaceMock.gpiod_line_get_value(line8)).thenReturn(-1);
         Pointer line9 = Pointer.createConstant(9);
         when(this.nativeInterfaceMock.gpiod_chip_get_line(chip2, 9)).thenReturn(line9);
         when(this.nativeInterfaceMock.gpiod_line_is_used(line9)).thenReturn(false);
-        when(this.nativeInterfaceMock.gpiod_line_request(eq(line9), any(), eq(0))).thenReturn(0);
+        when(this.nativeInterfaceMock.gpiod_line_request(eq(line9), any(), eq(0)))
+                .thenReturn(0);
         when(this.nativeInterfaceMock.gpiod_line_get_value(line9)).thenThrow(new Error());
         Pointer chip5 = Pointer.createConstant(5);
         when(this.nativeInterfaceMock.gpiod_chip_open("/dev/gpiochip5")).thenReturn(chip5);
         when(this.nativeInterfaceMock.gpiod_chip_num_lines(chip5)).thenReturn(64);
         Pointer line6 = Pointer.createConstant(6);
         when(this.nativeInterfaceMock.gpiod_chip_get_line(chip5, 6)).thenReturn(line6);
-        when(this.nativeInterfaceMock.gpiod_line_request(eq(line6), any(), eq(0))).thenReturn(0);
+        when(this.nativeInterfaceMock.gpiod_line_request(eq(line6), any(), eq(0)))
+                .thenReturn(0);
         Pointer line7 = Pointer.createConstant(7);
         when(this.nativeInterfaceMock.gpiod_chip_get_line(chip5, 7)).thenReturn(line7);
-        when(this.nativeInterfaceMock.gpiod_line_request(eq(line7), any(), eq(0))).thenReturn(0);
+        when(this.nativeInterfaceMock.gpiod_line_request(eq(line7), any(), eq(0)))
+                .thenReturn(0);
         Pointer line10 = Pointer.createConstant(10);
         when(this.nativeInterfaceMock.gpiod_chip_get_line(chip5, 10)).thenReturn(line10);
         when(this.nativeInterfaceMock.gpiod_line_is_used(line10)).thenReturn(false);
-        when(this.nativeInterfaceMock.gpiod_line_request(eq(line10), any(), eq(0))).thenReturn(0);
+        when(this.nativeInterfaceMock.gpiod_line_request(eq(line10), any(), eq(0)))
+                .thenReturn(0);
         when(this.nativeInterfaceMock.gpiod_line_set_value(line10, 1)).thenReturn(-1);
         Pointer line11 = Pointer.createConstant(11);
         when(this.nativeInterfaceMock.gpiod_chip_get_line(chip5, 11)).thenReturn(line11);
         when(this.nativeInterfaceMock.gpiod_line_is_used(line11)).thenReturn(false);
-        when(this.nativeInterfaceMock.gpiod_line_request(eq(line11), any(), eq(0))).thenReturn(0);
+        when(this.nativeInterfaceMock.gpiod_line_request(eq(line11), any(), eq(0)))
+                .thenReturn(0);
         when(this.nativeInterfaceMock.gpiod_line_set_value(line11, 1)).thenThrow(new Error());
 
-        when(this.nativeInterfaceMock.createLineRequestConfig(anyString(), anyInt(), anyInt())).thenReturn(null);
+        when(this.nativeInterfaceMock.createLineRequestConfig(anyString(), anyInt(), anyInt()))
+                .thenReturn(null);
     }
 
     @After
@@ -123,18 +132,18 @@ public class LibGpiodV1PinTest extends CommonSteps {
         givenV1Pin("GPIO_01", 1003);
 
         thenV1PinIsCreated();
-        thenV1PinHasCorrectParameters("GPIO_01", 1003, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP,
-                KuraGPIOTrigger.NONE);
+        thenV1PinHasCorrectParameters(
+                "GPIO_01", 1003, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.NONE);
     }
 
     @Test
     public void testV1PinCreationWithParameters() {
-        givenV1Pin("GPIO_02", 2004, KuraGPIODirection.OUTPUT, KuraGPIOMode.OUTPUT_PUSH_PULL,
-                KuraGPIOTrigger.BOTH_EDGES);
+        givenV1Pin(
+                "GPIO_02", 2004, KuraGPIODirection.OUTPUT, KuraGPIOMode.OUTPUT_PUSH_PULL, KuraGPIOTrigger.BOTH_EDGES);
 
         thenV1PinIsCreated();
-        thenV1PinHasCorrectParameters("GPIO_02", 2004, KuraGPIODirection.OUTPUT, KuraGPIOMode.OUTPUT_PUSH_PULL,
-                KuraGPIOTrigger.BOTH_EDGES);
+        thenV1PinHasCorrectParameters(
+                "GPIO_02", 2004, KuraGPIODirection.OUTPUT, KuraGPIOMode.OUTPUT_PUSH_PULL, KuraGPIOTrigger.BOTH_EDGES);
     }
 
     @Test
@@ -425,12 +434,12 @@ public class LibGpiodV1PinTest extends CommonSteps {
     private void givenV1Pin(String pinName, int terminal) {
         String chipPath = "/dev/gpiochip" + terminal / 1000;
         int offset = terminal % 1000;
-        this.v1Pin = new LibGpiodV1Pin(chipPath, offset, pinName, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP,
-                KuraGPIOTrigger.NONE);
+        this.v1Pin = new LibGpiodV1Pin(
+                chipPath, offset, pinName, KuraGPIODirection.INPUT, KuraGPIOMode.INPUT_PULL_UP, KuraGPIOTrigger.NONE);
     }
 
-    private void givenV1Pin(String pinName, int terminal, KuraGPIODirection direction, KuraGPIOMode mode,
-            KuraGPIOTrigger trigger) {
+    private void givenV1Pin(
+            String pinName, int terminal, KuraGPIODirection direction, KuraGPIOMode mode, KuraGPIOTrigger trigger) {
         String chipPath = "/dev/gpiochip" + terminal / 1000;
         int offset = terminal % 1000;
         this.v1Pin = new LibGpiodV1Pin(chipPath, offset, pinName, direction, mode, trigger);
@@ -501,12 +510,15 @@ public class LibGpiodV1PinTest extends CommonSteps {
     }
 
     private void whenV1PinRemovePinStatusListenerAfterMilliseconds(int milliseconds) {
-        this.executor.schedule(new Runnable() {
-            @Override
-            public void run() {
-                whenV1PinRemovePinStatusListener(LibGpiodV1PinTest.this.pinStatusListener);
-            }
-        }, milliseconds, TimeUnit.MILLISECONDS);
+        this.executor.schedule(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        whenV1PinRemovePinStatusListener(LibGpiodV1PinTest.this.pinStatusListener);
+                    }
+                },
+                milliseconds,
+                TimeUnit.MILLISECONDS);
     }
 
     private void whenV1PinMonitorEvents() {
@@ -526,8 +538,8 @@ public class LibGpiodV1PinTest extends CommonSteps {
         assertTrue(this.v1Pin instanceof LibGpiodV1Pin);
     }
 
-    private void thenV1PinHasCorrectParameters(String pinName, int pinTerminal, KuraGPIODirection direction,
-            KuraGPIOMode mode, KuraGPIOTrigger trigger) {
+    private void thenV1PinHasCorrectParameters(
+            String pinName, int pinTerminal, KuraGPIODirection direction, KuraGPIOMode mode, KuraGPIOTrigger trigger) {
         assertEquals(pinName, this.v1Pin.getName());
         assertEquals(pinTerminal, this.v1Pin.getIndex());
         assertEquals(direction, this.v1Pin.getDirection());
